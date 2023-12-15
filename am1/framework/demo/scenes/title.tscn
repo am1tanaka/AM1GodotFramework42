@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://do5l3hr4u7864"]
+[gd_scene load_steps=9 format=3 uid="uid://do5l3hr4u7864"]
 
 [ext_resource type="FontFile" uid="uid://cu5qogjtik1se" path="res://mplus/Mplus1Code-Bold.otf" id="1_4xnpx"]
+[ext_resource type="Script" path="res://am1/framework/demo/scripts/title.gd" id="1_8phif"]
 [ext_resource type="Theme" uid="uid://tg7ne1rprkpg" path="res://am1/framework/demo/themes/mplus_small.tres" id="2_mjlia"]
 [ext_resource type="Script" path="res://am1/framework/scripts/version.gd" id="2_vxwfm"]
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/credits_button.gd" id="4_6dr51"]
@@ -15,6 +16,7 @@ default_font = ExtResource("1_4xnpx")
 default_font_size = 16
 
 [node name="Title" type="Node"]
+script = ExtResource("1_8phif")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

@@ -79,3 +79,7 @@
 - 隠しきったときのシグナルcoveredと表示しきったときのシグナルuncoveredを用意
 - シーンの切り替わり時に消えないように実行時はSceneChangerの子にする
 
+## 技術
+- シーンの切り替え
+  - [SceneTree](https://docs.godotengine.org/ja/4.x/classes/class_scenetree.html#class-scenetree-method-change-scene-to-packed)
+- [バックグラウンド読み込み](https://docs.godotengine.org/ja/4.x/tutorials/io/background_loading.html)

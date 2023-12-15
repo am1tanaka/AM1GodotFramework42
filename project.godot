@@ -16,6 +16,10 @@ run/main_scene="res://am1/framework/demo/scenes/title.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+SceneChanger="*res://am1/framework/scripts/scene_changer.gd"
+
 [display]
 
 window/size/viewport_width=960
