@@ -1,81 +1,81 @@
-# �V�[���؂�ւ�
+# シーン切り替え
 
-## �v��
-- ����┻����~
-- ��ʂ��B���������Ɏ��̕K�v�ȃV�[����񓯊��ǂݍ���
-- ��ʂ��B���摜���V�[�����܂����ňێ�
-- ��ʂ��B�ꂽ�Ƃ��̏���
-  - �K�v�ȃV�[�������ׂēǂݍ���
-  - �s�v�ɂȂ����V�[�������
-  - ���ׂẴV�[�����������珉�������Ăяo��
-  - �ǂݍ��ݏ󋵂̕\��
-- BGM�̍Đ����p��
-- ��ʂ̕������O��
-- ����̕��A
+## 要件
+- 操作や判定を停止
+- 画面を隠す処理中に次の必要なシーンを非同期読み込み
+- 画面を隠す画像をシーンをまたいで維持
+- 画面が隠れたときの処理
+  - 必要なシーンをすべて読み込む
+  - 不要になったシーンを解放
+  - すべてのシーンが揃ったら初期化を呼び出す
+  - 読み込み状況の表示
+- BGMの再生を継続
+- 画面の覆いを外す
+- 操作の復帰
 
-## �V�[���J��
+## シーン遷移
 
 ### Autoload
-- SceneChanger�m�[�h�B��ʂ��B��
-- �Q�[����Ԃ̓ǂݍ���
+- SceneChangerノード。画面を隠す
+- ゲーム状態の読み込み
 
-### �V�[���̋N��
-- �V�[���X�N���v�g��_ready
-  - SceneChanger��covered_loaded_unloaded�V�O�i���ɏ�����������n��
-  - UI�����݂̏�Ԃɂ��킹�Đݒ�(�eUI�Ɏ���)
-  - ������ւ���
-- �^�C�g������������
-  - ��ʂ̕������O�ꂽ�V�O�i����ݒ�
-  - ��ʂ̕������������鉉�o�J�n
-  - SceneChanger�ɕۑ�����Ă�����ʂ̕������폜
-- ��ʂ̕������O�ꂽ
-  - ������J�n
+### シーンの起動
+- シーンスクリプトの_ready
+  - SceneChangerのcovered_loaded_unloadedシグナルに初期化処理を渡す
+  - UIを現在の状態にあわせて設定(各UIに実装)
+  - 操作を禁じる
+- タイトル初期化処理
+  - 画面の覆いが外れたシグナルを設定
+  - 画面の覆いを解除する演出開始
+  - SceneChangerに保存されていた画面の覆いを削除
+- 画面の覆いが外れた
+  - 操作を開始
 
-### ���̃V�[����
-- ������֎~
-- SceneChanger�Ɉȉ���n�����\�b�h���Ăяo��
-  - �ȉ����^��`
-    - ��ʂ𕢂��V�[���̃p�b�N
-    - �񓯊��œǂݍ��ރV�[���̔z��
-    - �������V�[���̔z��
-    - �����ǂݍ��݂���V�[���̔z��
-  - �ȏ���L�^���ď������J�n
-- �V�[���̏������̓V�[����_ready�œo�^
+### 他のシーンへ
+- 操作を禁止
+- SceneChangerに以下を渡すメソッドを呼び出す
+  - 以下を型定義
+    - 画面を覆うシーンのパック
+    - 非同期で読み込むシーンの配列
+    - 解放するシーンの配列
+    - 同期読み込みするシーンの配列
+  - 以上を記録して処理を開始
+- シーンの初期化はシーンの_readyで登録
 
-## �J������
+## 開発項目
 
-### SceneChanger�N���X(scene_changer.gd)
-- �V�[���؂�ւ��Ɋւ��鏈���̃t�@�T�[�h
-- Autoload�ɓo�^
-- �V�[���؂�ւ������s����̂ɕK�v�ȋ@�\�Əꏊ���
-- �V�[���̔񓯊��ǂݍ��݂Ɖ���̊Ǘ�
-- ��ʂ𕢂��V�[�����󂯎���āA�z���ɂ��āA�i�����m�F
-- covered_loaded_unloaded�V�O�i�����`�B��ʂ��B����āA�񓯊��ǂݍ��݂��������ׂĊ���������emit
-- ��ʂ̕\���J�n
-- uncovered�ɓo�^���鏈�����󂯎���ēo�^
+### SceneChangerクラス(scene_changer.gd)
+- シーン切り替えに関する処理のファサード
+- Autoloadに登録
+- シーン切り替えを実行するのに必要な機能と場所を提供
+- シーンの非同期読み込みと解放の管理
+- 画面を覆うシーンを受け取って、配下にして、進捗を確認
+- covered_loaded_unloadedシグナルを定義。画面が隠されて、非同期読み込みや解放がすべて完了したらemit
+- 画面の表示開始
+- uncoveredに登録する処理を受け取って登録
 
 ### SceneChangeData extends RefCounted
 
-�ȉ���ێ����āASceneChanger�Ɏ󂯓n�����߂̃N���X�B
+以下を保持して、SceneChangerに受け渡すためのクラス。
 
-- ��ʂ𕢂��V�[���̃p�b�N
-- �񓯊��œǂݍ��ރV�[���̔z��
-- �������V�[���̔z��
-- �����ǂݍ��݂���V�[���̔z��
+- 画面を覆うシーンのパック
+- 非同期で読み込むシーンの配列
+- 解放するシーンの配列
+- 同期読み込みするシーンの配列
 
 
 ### SceneChangeProgress
-- SceneChanger�̎q�m�[�h
-- �ǂݍ��ݒ��̃C���W�P�[�^�[��\��
+- SceneChangerの子ノード
+- 読み込み中のインジケーターを表示
 
 ### StartCover
-- SceneChanger�̎q�m�[�h�ɍ쐬����ColorRect
-- �Ƃ肠������ʂ��B���B�^�C�g���̃t�F�[�h�Ɠ����F�ɂ���
-- �ŏ��̃V�[�����N�����������
+- SceneChangerの子ノードに作成するColorRect
+- とりあえず画面を隠す。タイトルのフェードと同じ色にする
+- 最初のシーンが起動したら消す
 
-### ��ʂ𕢂����߂̃V�[��
-- �B�������ƕ\������������
-- �V�[���؂�ւ����Ɏ��s
-- �B���������Ƃ��̃V�O�i��covered�ƕ\�����������Ƃ��̃V�O�i��uncovered��p��
-- �V�[���̐؂�ւ�莞�ɏ����Ȃ��悤�Ɏ��s����SceneChanger�̎q�ɂ���
+### 画面を覆うためのシーン
+- 隠す処理と表示処理を持つ
+- シーン切り替え時に実行
+- 隠しきったときのシグナルcoveredと表示しきったときのシグナルuncoveredを用意
+- シーンの切り替わり時に消えないように実行時はSceneChangerの子にする
 
