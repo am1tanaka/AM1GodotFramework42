@@ -1,3 +1,8 @@
 [gd_scene format=3 uid="uid://do5l3hr4u7864"]
 
 [node name="Title" type="Node"]
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_right = 204.0
+offset_bottom = 40.0
+text = "Hello, Godot!"
