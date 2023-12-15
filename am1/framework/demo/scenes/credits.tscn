@@ -1,0 +1,44 @@
+[gd_scene load_steps=2 format=3 uid="uid://c7pl4xqg7u0uu"]
+
+[ext_resource type="Theme" uid="uid://xro8qqamqkdy" path="res://am1/framework/demo/themes/mplus_medium.tres" id="1_fk2wu"]
+
+[node name="Credits" type="Node"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.25098)
+
+[node name="CloseButton" type="Button" parent="CanvasLayer"]
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -24.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 48.0
+grow_horizontal = 0
+theme = ExtResource("1_fk2wu")
+text = "X"
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_fk2wu")
+text = "
+企画・開発
+たなかゆう
+
+フォント
+M+ FONTS
+"
+horizontal_alignment = 1

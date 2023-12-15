@@ -11,7 +11,8 @@ config_version=5
 [application]
 
 config/name="Am 1 Godot Framework 42"
-run/main_scene="res://scenes/title.tscn"
+config/version="0.1.0"
+run/main_scene="res://am1/framework/demo/scenes/title.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -20,3 +21,4 @@ config/icon="res://icon.svg"
 window/size/viewport_width=960
 window/size/viewport_height=540
 window/size/resizable=false
+window/stretch/mode="viewport"

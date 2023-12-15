@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://caxgtaifeucfc"]
+
+[ext_resource type="Theme" uid="uid://xro8qqamqkdy" path="res://am1/framework/demo/themes/mplus_medium.tres" id="1_dnld8"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_bqr41"]
+
+[node name="Game" type="Node"]
+
+[node name="World" type="Node3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="World"]
+mesh = SubResource("SphereMesh_bqr41")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="World"]
+transform = Transform3D(0.766044, -0.55667, 0.321394, 0, 0.5, 0.866025, -0.642788, -0.663414, 0.383022, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Score" type="Label" parent="CanvasLayer"]
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.0
+offset_top = 10.0
+offset_right = 48.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme = ExtResource("1_dnld8")
+text = "000000"
