@@ -3,12 +3,9 @@ extends Node
 
 ## Fade処理用クラス
 
-## シグナル
-signal _fade_out
-signal _fade_in
-
 ## キャッシュ
 @onready var color_rect : ColorRect = $CanvasLayer/ColorRect
+var tween: Tween
 
 ## 読み込みと同時に消す
 func _ready():
@@ -26,7 +23,9 @@ func start_fade_out(color: Color, sec: float, done):
 	var final_color = color
 	final_color.a = 1
 	
-	var tween = create_tween()
+	if tween:
+		tween.kill()
+	tween = create_tween()
 	tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(color_rect, "color", final_color, sec).finished.connect(done)
 
@@ -37,9 +36,17 @@ func start_fade_in(sec: float, done):
 	var final_color = color_rect.color
 	final_color.a = 0
 	
-	var tween = create_tween()
+	if tween:
+		tween.kill()
+	tween = create_tween()
 	tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(color_rect, "color", final_color, sec).finished.connect(done)
+
+## このシーンを消します
+func release():
+	if tween:
+		tween.kill()
+	queue_free()
 
 ## 動作確認用メソッド
 func test_start_fade_in():
@@ -47,3 +54,4 @@ func test_start_fade_in():
 
 func test_fade_in_done():
 	print("フェードイン完了")
+	release()
