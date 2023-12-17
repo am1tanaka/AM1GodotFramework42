@@ -35,7 +35,7 @@
 - GameStateでゲーム状態の読み込み
 - _readyで以下を実行
   - 最初の画面を隠す処理を登録
-- シーンからset_init_scene(初期化シーンパス)を受け取る
+- シーンからset_init_scene_method(初期化メソッド)を受け取る
   - 操作を禁止
   - はじめて
 	- シーンの読み込みは不要。受け取ったcovered_loaded_unloadedを即時emit
