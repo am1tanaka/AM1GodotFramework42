@@ -15,6 +15,14 @@
 
 ## シーン遷移
 
+### 必要なもの
+- SceneChangerクラス
+  - Autoloadに登録して永続
+- covered_loaded_unloadedシグナルに登録するシーンの初期化用メソッド
+- release_scenesシグナルに登録するシーンの解放用メソッド
+- シーンの切り替えを開始するためのスクリプトを持ったシーン
+  - 画面を覆う処理の登録や必要なシーンの読み込み開始、画面を覆う処理の開始、非同期読み込みが完了するのを待って、release_scenesとcovered_loaded_unloadedシグナルをemit
+
 ### Autoload
 - SceneChangerノードを生成して子ノードにする
 - GameStateでゲーム状態の読み込み
