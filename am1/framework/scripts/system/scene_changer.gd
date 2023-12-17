@@ -42,8 +42,9 @@ func change_scene(change_scene_path):
 	add_child(scene_instance)
 
 ## シーンの初期化を実行するシーン
-func set_init_scene_method(init_method: Callable):
+func set_init_scene_method(init_method: Callable, release_method: Callable):
 	GameState.control_off()
+	release_scenes.connect(release_method)
 	if first_boot:
 		first_boot = false
 		init_method.call()
@@ -91,22 +92,12 @@ func init_scene(parent_scene: Node):
 	# TODO 進捗シーンを表示
 
 	# 読み込み完了待ち
+	var loaded_scene = Array()
 	for path in async_load_scene_pathes:
-		var status = ResourceLoader.load_threaded_get_status(path)
-		
-		# 読み込み待ち
-		while (status == ResourceLoader.ThreadLoadStatus.THREAD_LOAD_IN_PROGRESS):
-			await get_tree().process_frame
-			status = ResourceLoader.load_threaded_get_status(path)
-
-		# エラーチェック
-		if status != ResourceLoader.ThreadLoadStatus.THREAD_LOAD_LOADED:
-			print("Load Error: "+path)
-			continue
+		loaded_scene.append(ResourceLoader.load_threaded_get(path))
 
 	# シーンの作成と子ノード	
-	for path in async_load_scene_pathes:
-		var scene = ResourceLoader.load_threaded_get(path)
+	for scene in loaded_scene:
 		var scene_instance = scene.instantiate()
 		parent_scene.add_child(scene_instance)
 		
