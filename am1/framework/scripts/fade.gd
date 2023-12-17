@@ -35,8 +35,8 @@ func start_cover(color: Color, sec: float):
 	tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(color_rect, "color", final_color, sec)
 
-## Tweenの完了をawaitで待つ
-func wait_tween():
+## 覆う処理をawaitで待つ
+func wait_cover():
 	if tween:
 		await tween.finished
 
