@@ -2,14 +2,7 @@ extends Node
 
 ## タイトルからゲームシーンを開始する処理
 
-func _init():
-	print("start game init")
-
-func _ready():
-	print("start game ready")
-
 func _enter_tree():
-	print("start game enter tree")
 	var fade = await SceneChanger.load_cover("res://am1/framework/scenes/fade.tscn") as ScreenCover
 	
 	## 画面覆い開始

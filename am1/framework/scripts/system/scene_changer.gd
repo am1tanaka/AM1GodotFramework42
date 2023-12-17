@@ -84,7 +84,7 @@ func async_load_scenes(scene_pathes: Array[String]):
 ## 画面を覆う処理の完了を待つ
 func wait_cover_finished():
 	if cover_instance:
-		await cover_instance.wait_cover
+		await cover_instance.wait_cover()
 
 ## シーンの読み込み完了と
 func init_scene(parent_scene: Node):
