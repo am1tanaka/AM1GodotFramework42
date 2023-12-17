@@ -1,5 +1,5 @@
 class_name Fade
-extends Node
+extends ScreenCover
 
 ## Fade処理用クラス
 
@@ -10,48 +10,55 @@ var tween: Tween
 ## 読み込みと同時に消す
 func _ready():
 	color_rect.color.a = 0
-	start_fade_out(color_rect.color, 1.0, test_start_fade_in)
 
 ## フェードアウト実行
 ## color フェードの色
 ## sec フェード秒数
-## done フェードアウト完了時に呼び出したい関数
-func start_fade_out(color: Color, sec: float, done):
-	color.a = 0
+func start_cover(color: Color, sec: float):
+	if tween:
+		tween.kill()
+	
+	# 瞬時に画面を覆う
+	if 	is_zero_approx(sec):
+		color.a = 1.0
+		color_rect.color = color
+		return
+
+	# フェードアウト
+	color.a = 0.0
 	color_rect.color = color
 
 	var final_color = color
 	final_color.a = 1
 	
-	if tween:
-		tween.kill()
 	tween = create_tween()
 	tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(color_rect, "color", final_color, sec).finished.connect(done)
+	tween.tween_property(color_rect, "color", final_color, sec)
+
+## Tweenの完了をawaitで待つ
+func wait_tween():
+	if tween:
+		await tween.finished
 
 ## フェードイン実行
 ## sec フェード秒数
-## done フェードイン完了時に呼び出したい関数
-func start_fade_in(sec: float, done):
+func start_uncover(sec: float):
+	if tween:
+		tween.kill()
+
+	if is_zero_approx(sec):
+		color_rect.color.a = 0
+		return
+
 	var final_color = color_rect.color
 	final_color.a = 0
 	
-	if tween:
-		tween.kill()
 	tween = create_tween()
 	tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(color_rect, "color", final_color, sec).finished.connect(done)
+	tween.tween_property(color_rect, "color", final_color, sec)
 
 ## このシーンを消します
 func release():
 	if tween:
 		tween.kill()
 	queue_free()
-
-## 動作確認用メソッド
-func test_start_fade_in():
-	start_fade_in(1.0, test_fade_in_done)
-
-func test_fade_in_done():
-	print("フェードイン完了")
-	release()
