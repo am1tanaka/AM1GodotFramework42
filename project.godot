@@ -18,7 +18,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-SceneChanger="*res://am1/framework/scripts/scene_changer.gd"
+GameState="*res://am1/framework/scripts/system/game_state.gd"
+SceneChanger="*res://am1/framework/scripts/system/scene_changer.gd"
 
 [display]
 

@@ -18,8 +18,15 @@
 ### 必要なもの
 - SceneChangerクラス
   - Autoloadに登録して永続
-- covered_loaded_unloadedシグナルに登録するシーンの初期化用メソッド
-- release_scenesシグナルに登録するシーンの解放用メソッド
+  - SceneChanger.set_init_scene_method(メソッド)
+    - covered_loaded_unloadedシグナルに登録するシーンの初期化用メソッド
+  - SceneChanger.change_scene(シーンの切り替えを開始するシーンのパス)
+    - 渡されたパスを生成してSceneChangerの子供にして処理
+- Autoload、あるいは、切り替え元シーン
+  - change_sceneの呼び出し
+  - release_scenesシグナルに登録するシーンの解放用メソッド
+- 新しく読み込むシーン
+  - set_init_scene_methodに渡すメソッド
 - シーンの切り替えを開始するためのスクリプトを持ったシーン
   - 画面を覆う処理の登録や必要なシーンの読み込み開始、画面を覆う処理の開始、非同期読み込みが完了するのを待って、release_scenesとcovered_loaded_unloadedシグナルをemit
 
