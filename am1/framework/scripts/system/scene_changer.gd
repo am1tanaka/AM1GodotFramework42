@@ -96,21 +96,32 @@ func wait_cover_finished():
 ## シーンの非同期読み込み後に呼び出す。
 ## シーンの覆い待ち、前のシーンの解放、シーンの読み込み待ちをして、
 ## covered_loaded_unloadedをemitしてシーンの初期化へ処理を移す。
-func wait_and_init_scenes():
+func wait_and_init_scenes(add_load_scenes: Array[String] = []):
 	## 画面覆い完了待ち
 	await SceneChanger.wait_cover_finished()
 
 	# TODO 進捗シーンを表示
 
 	# シーンの解放処理
-	if release_scenes:
-		release_scenes.emit()
+	release_scenes.emit()
+	
+	# 再読み込みシーン
+	async_load_scenes(add_load_scenes)
 
+	# 非同期読み込み待ち
+	await wait_async_scenes_loaded()
+
+	# 登録された処理を実行
+	await get_tree().process_frame
+	covered_loaded_unloaded.emit()
+
+## 非同期読み込みしているシーンの読み込みが完了するのを待つ
+func wait_async_scenes_loaded():
 	# 読み込み完了待ち
 	var loaded_scene = Array()
 	for path in async_load_scene_pathes:
 		loaded_scene.append(ResourceLoader.load_threaded_get(path))
-
+	
 	# シーンの作成と子ノード	
 	for scene in loaded_scene:
 		var scene_instance = scene.instantiate()
@@ -118,7 +129,3 @@ func wait_and_init_scenes():
 		
 	# パスを解放
 	async_load_scene_pathes.clear()
-	
-	# 登録された処理を実行
-	await get_tree().process_frame
-	covered_loaded_unloaded.emit()

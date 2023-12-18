@@ -1,5 +1,130 @@
 # シーン切り替え
 
+## 構成
+
+- 常時シーン
+  - SceneChanger
+	- SceneChangerクラスがアタッチされている。シーン切り替えの処理を管轄
+  - シーン切り替えクラス
+	- SceneChanger.change_scene(シーンパス)で生成するシーン切り替え処理
+	- アタッチしたスクリプトの_enter_tree()に次のシーンを読み込む
+	- start_title.gdやcold_start_game.gdなど
+- シーン管理クラス
+  - メインのシーンのルートにアタッチするスクリプト
+  - _readyで初期化メソッドをSceneChanger.set_init_scene_method()で登録
+  - シーンの初期化は、画面が隠れてシーンの読み込みが完了したら呼ばれる
+  - シーンの初期化処理のときに、解放する関数を登録
+  - シーンが切り替わるときに、不要なシーンを削除する解放処理を持つ
+- シーンの切り替えクラス
+  - シーン切り替えを処理するシーンにアタッチして、SceneChangerで生成する
+  - _enter_tree()にシーン切り替え処理を実装
+  - 次に必要なシーンの非同期読み込み開始やフェードアウトなどの演出を処理
+  - 画面を覆って、シーンの切り替え処理を完了したらシーン管理クラスの_readyから登録された初期化処理を呼び出して役目終了
+
+## サンプルコード
+
+### シーンの管理クラス
+デモのタイトルシーンの初期化クラスです。これが最小構成です。
+
+```
+extends Node
+
+## タイトル制御クラス
+
+func _ready():
+	SceneChanger.set_init_scene_method(init_title)
+
+## タイトルシーンの初期化
+func init_title():
+	SceneChanger.release_scenes.connect(release_title)
+	await SceneChanger.uncover(1.0)
+	GameState.control_on()
+
+## 解放
+func release_title():
+	queue_free()
+```
+
+### シーン切り替えクラス
+シーンの切り替えシーケンスを実行するクラスです。これをNodeで作成したシーンにアタッチして、SceneChanger.change_scene()にパスを渡すことでシーンの切り替えを開始します。
+
+```
+extends Node
+
+func _enter_tree():
+	## 画面覆い開始
+	var fade = SceneChanger.load_cover("res://am1/framework/scenes/fade.tscn") as ScreenCover	
+	fade.start_cover(Color(0.0, 0.0, 0.0, 0.0), 1.0)
+
+	## シーン読み込み開始
+	SceneChanger.async_load_scenes(["res://am1/framework/demo/scenes/game.tscn"])
+
+	## シーンの読み込み完了を待って、シーンの初期化メソッドを呼び出す
+	SceneChanger.wait_and_init_scenes()
+
+	## 切り替えが終わったら解放
+	queue_free()
+```
+
+レベルなどの再読み込みが必要な場合は、`SceneChanger.wait_and_init_scenes()`に再読み込みをするシーンのパスの配列を引数で渡します。
+
+
+## 手順
+
+切り替え処理は2段階で行います。シーンをまたいで切り替えるための切り替え処理を持ったシーンを永続シーンのSceneChangerノードの子供にして実行します。
+
+1. 操作禁止
+1. 次のシーンの読み込み開始
+1. 画面を覆う
+1. シーンの解放
+1. 読み直しシーンの読み込み
+1. シーンの読み込み完了待ち
+1. 次のシーンの初期化をemit
+1. 切り替えシーンを削除
+
+次のシーンの初期化処理は、次のシーンにアタッチしているスクリプトの_readyで登録します。その処理が上記処理の次のシーンの初期化をemitで実行されます。
+
+1. シーンの解放処理を登録
+1. その他シーンの初期化処理
+1. 画面の覆いを外す
+1. 操作禁止の解除
+
+これらを制御するための構成は以下の通りです。
+
+- SceneChanger
+  - Autoloadに登録して自動生成するスクリプト
+  - 配下にsub_scene_changerノードを持ち、そこに画面を覆う処理などを所属させます
+  - change_scene(切り替えシーンのパス)
+	- 操作を禁止したのち、渡されたパスのシーンを非同期読み込みします
+  - set_init_scene_method(シーンの初期化メソッド)
+	- シーンの_readyから呼び出して初期化メソッドを登録します
+	- 初回起動のときは即時、初期化メソッドを呼び出します
+	- 二回目以降のときはシグナルに登録して、初期化emitで実行します
+  - load_cover(画面を覆うシーンのパス)
+	- 画面を覆う演出シーンを非同期で読み込んで制御クラスのインスタンスを返します
+  - uncover(秒数)
+	- 画面の覆いを指定秒数で解除します
+	- awaitで完了を待ちます
+  - async_load_scenes(読み込むシーンパスの配列)
+	- 文字列の配列で指定したシーンを非同期読み込み開始します
+  - wait_cover_finished
+	- 画面を覆う処理の完了をawaitで待ちます
+  - wait_and_init_scenes
+	- 再読み込みがないシーン向けの切り替え処理
+	- 画面の覆いを待って、シーンの解放、非同期読み込み待ち、シーンの生成、1フレーム待ってから登録された初期化処理の呼び出しをまとめて実行
+  - wait_scenes_async_loaded
+	- 非同期読み込み中の全てのシーンの読み込み完了を待って、生成してルートの子にする処理
+	- awaitで待つ
+	- 再読み込みがある初期化のときに利用
+
+次のシーンの読み込みと
+
+必要なシーンの非同期読み込み
+シーンの切り替えを跨いで処理する
+
+
+---
+
 ## 要件
 - 操作や判定を停止
 - 画面を隠す処理中に次の必要なシーンを非同期読み込み
