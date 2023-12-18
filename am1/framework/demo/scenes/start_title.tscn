@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dn8uifp57k5py"]
+
+[ext_resource type="Script" path="res://am1/framework/demo/scripts/start_title.gd" id="1_6mg76"]
+
+[node name="StartTitle" type="Node"]
+script = ExtResource("1_6mg76")

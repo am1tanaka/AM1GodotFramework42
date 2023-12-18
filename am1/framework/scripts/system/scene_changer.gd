@@ -37,14 +37,15 @@ func change_scene(change_scene_path):
 		return
 	
 	# 読み込み待ち
-	var scene = await ResourceLoader.load_threaded_get(change_scene_path)
+	var scene = ResourceLoader.load_threaded_get(change_scene_path)
 	var scene_instance = scene.instantiate()
 	add_child(scene_instance)
 
-## シーンの初期化を実行するシーン
-func set_init_scene_method(init_method: Callable, release_method: Callable):
+## メインシーンが_readyになったら呼び出されるシーンの初期化の開始、あるいはcovered_laoded_uncoveredへの登録
+## init_method 画面を覆って非同期読み込みが完了したら呼び出す初期化処理
+## release_method このシーンを解放するときにemitする処理
+func set_init_scene_method(init_method: Callable):
 	GameState.control_off()
-	release_scenes.connect(release_method)
 	if first_boot:
 		first_boot = false
 		init_method.call()
@@ -57,16 +58,21 @@ func load_cover(cover_path) -> ScreenCover:
 		print("load_cover error:"+cover_path)
 		return
 	
-	var cover_node = await ResourceLoader.load_threaded_get(cover_path)
+	var cover_node = ResourceLoader.load_threaded_get(cover_path)
 	cover_instance = cover_node.instantiate()
 	get_tree().root.add_child(cover_instance)
 	return cover_instance
 
 ## 画面の覆いを解除
+## awaitで解除を待つ
 func uncover(sec: float):
+	if !cover_instance:
+		return
+
 	cover_instance.start_uncover(sec)
 	await cover_instance.wait_cover()
 	cover_instance.queue_free()
+
 
 ## 非同期でシーンの読み込みを開始
 func async_load_scenes(scene_pathes: Array[String]):
@@ -87,9 +93,18 @@ func wait_cover_finished():
 	if cover_instance:
 		await cover_instance.wait_cover()
 
-## シーンの読み込み完了と
-func init_scene(parent_scene: Node):
+## シーンの非同期読み込み後に呼び出す。
+## シーンの覆い待ち、前のシーンの解放、シーンの読み込み待ちをして、
+## covered_loaded_unloadedをemitしてシーンの初期化へ処理を移す。
+func wait_and_init_scenes():
+	## 画面覆い完了待ち
+	await SceneChanger.wait_cover_finished()
+
 	# TODO 進捗シーンを表示
+
+	# シーンの解放処理
+	if release_scenes:
+		release_scenes.emit()
 
 	# 読み込み完了待ち
 	var loaded_scene = Array()
@@ -99,7 +114,11 @@ func init_scene(parent_scene: Node):
 	# シーンの作成と子ノード	
 	for scene in loaded_scene:
 		var scene_instance = scene.instantiate()
-		parent_scene.add_child(scene_instance)
+		get_tree().root.add_child(scene_instance)
 		
 	# パスを解放
 	async_load_scene_pathes.clear()
+	
+	# 登録された処理を実行
+	await get_tree().process_frame
+	covered_loaded_unloaded.emit()
