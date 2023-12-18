@@ -154,3 +154,14 @@ func wait_async_scenes_loaded():
 		
 	# パスを解放
 	_async_load_scene_pathes.clear()
+
+## 指定のシーンを解放する。[br]
+## [param scene_names] 削除するシーン名を配列で指定
+func free_scenes(scene_names: Array[String]):
+	var nodes = get_tree().root.get_children()
+	for node in nodes:
+		for scene_name in scene_names:
+			if node.name == scene_name:
+				node.queue_free()
+				break
+

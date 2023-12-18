@@ -67,13 +67,12 @@ func _process_game():
 	if Input.is_action_just_pressed("Accept"):
 		print("Accept")
 	if Input.is_action_just_pressed("GameOver"):
-		print("Push GameOver")	
 		next_state = State.GameOver
 	
 
 ## ゲームシーンを解放する処理
 func _release_game_scene():
-	queue_free()
+	SceneChanger.free_scenes(["Game", "GameOver"])
 
 ## ゲームオーバーに切り替え
 func _change_game_over():

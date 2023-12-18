@@ -16,8 +16,7 @@ func _enter_tree():
 	SceneChanger.async_load_scenes(["res://am1/framework/demo/scenes/title.tscn"])
 	
 	## 画面覆い完了待ち
-	await SceneChanger.wait_cover_finished()
+	await SceneChanger.wait_and_init_scenes()
 
 	## 切り替えが終わったら解放
 	queue_free()
-
