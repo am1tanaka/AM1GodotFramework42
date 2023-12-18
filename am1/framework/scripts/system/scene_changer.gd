@@ -2,6 +2,9 @@ extends Node
 
 ## シーンの遷移を管理するクラス。[br]
 ## 最初に起動するシーンの_ready関数でset_init_scene_method()に初期化メソッドを渡して呼び出す。
+## set_init_scene_method()に渡す初期化メソッドの例は以下の通り。[br]
+## @tutorial(シーンの管理クラス):      https://datgm23.github.io/AM1GodotFramework42/docs/examples/scene_manage_class.md
+## @tutorial(シーンを切り替えるクラス): https://datgm23.github.io/AM1GodotFramework42/docs/examples/change_scene_sequence.md
 
 ## 最初に画面を覆うシーン
 const _start_cover: PackedScene = preload("res://am1/framework/scenes/fade.tscn")
