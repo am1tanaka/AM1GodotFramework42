@@ -33,7 +33,7 @@ func change_scene(change_scene_path):
 
 	# 切り替えシーンの読み込み
 	if ResourceLoader.load_threaded_request(change_scene_path) != Error.OK:
-		print("change scene error: "+change_scene_path)
+		push_error("change scene error: "+change_scene_path)
 		return
 	
 	# 読み込み待ち
@@ -55,7 +55,7 @@ func set_init_scene_method(init_method: Callable):
 ## 指定のパスのシーンを読み込んで、子ノードにしてインスタンスを返す
 func load_cover(cover_path) -> ScreenCover:
 	if ResourceLoader.load_threaded_request(cover_path) != Error.OK:
-		print("load_cover error:"+cover_path)
+		push_error("load_cover error:"+cover_path)
 		return
 	
 	var cover_node = ResourceLoader.load_threaded_get(cover_path)
@@ -83,7 +83,7 @@ func async_load_scenes(scene_pathes: Array[String]):
 		
 		# 読み込み開始
 		if ResourceLoader.load_threaded_request(path) != Error.OK:
-			print("Load Error: "+path)
+			push_error("Load Error: "+path)
 			return
 		
 		async_load_scene_pathes.append(path)
