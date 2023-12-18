@@ -32,21 +32,21 @@ func _ready():
 	add_child(_cover_instance)
 	_cover_instance.start_cover(Color(1.0, 1.0, 1.0, 1.0), 0)
 
-## シーン切り替えをするときに、シーンの読み込みなどのシーケンスを処理するシーンのパスを渡して呼び出す。[br]
-## [param change_scene_path] 切り替え処理を実行するシーンのパス
-func change_scene(change_scene_path):
+## シーン切り替えをするときに、シーンの読み込みなどのシーケンスを処理するスクリプトのパスを渡して呼び出す。[br]
+## [param change_scene_script_path] 切り替え処理を実行するスクリプトのパス
+func change_scene(change_scene_script_path):
 	# 操作禁止
 	GameState.control_off()
 
 	# 切り替えシーンの読み込み
-	if ResourceLoader.load_threaded_request(change_scene_path) != Error.OK:
-		push_error("change scene error: "+change_scene_path)
+	if ResourceLoader.load_threaded_request(change_scene_script_path) != Error.OK:
+		push_error("change scene error: "+change_scene_script_path)
 		return
 	
 	# 読み込み待ち
-	var _scene = ResourceLoader.load_threaded_get(change_scene_path)
-	var _scene_instance = _scene.instantiate()
-	add_child(_scene_instance)
+	var script = ResourceLoader.load_threaded_get(change_scene_script_path)
+	var script_instance = script.new()
+	add_child(script_instance)
 
 ## メインシーンの_readyから呼び出される。
 ## 初回起動のときはすぐに渡された初期化メソッドを呼び出して最初のシーンを開始する。

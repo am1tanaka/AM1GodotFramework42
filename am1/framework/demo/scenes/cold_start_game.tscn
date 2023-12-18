@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://h8a26gaspscr"]
+[gd_scene load_steps=2 format=3 uid="uid://fvob1fs7bflj"]
 
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/cold_start_game.gd" id="1_t4vmh"]
 

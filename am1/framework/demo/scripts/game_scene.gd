@@ -9,7 +9,7 @@ func _ready():
 func _process(delta):
 	if !GameState.can_control:
 		return
-		
+
 	if Input.is_action_just_pressed("Accept"):
 		print("Accept")
 	if Input.is_action_just_pressed("GameOver"):
