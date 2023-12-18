@@ -2,6 +2,7 @@ extends Node
 
 ## タイトル制御クラス
 
+## シーンが開始したら初期化関数を登録
 func _ready():
 	SceneChanger.set_init_scene_method(init_title)
 
