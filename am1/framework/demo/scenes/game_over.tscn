@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://j2xs22qp2q0t"]
+[gd_scene load_steps=3 format=3 uid="uid://j2xs22qp2q0t"]
 
 [ext_resource type="Theme" uid="uid://xro8qqamqkdy" path="res://am1/framework/demo/themes/mplus_medium.tres" id="1_08rmo"]
+[ext_resource type="Script" path="res://am1/framework/demo/scripts/game_over.gd" id="1_71v1g"]
 
 [node name="GameOver" type="Node"]
+script = ExtResource("1_71v1g")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

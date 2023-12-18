@@ -131,14 +131,26 @@ func wait_and_init_scenes(add_load_scenes: Array[String] = []):
 ## 非同期読み込みしているシーンの読み込みが完了するのを待つ。
 func wait_async_scenes_loaded():
 	# 読み込み完了待ち
-	var _loaded_scene = Array()
-	for _path in _async_load_scene_pathes:
-		_loaded_scene.append(ResourceLoader.load_threaded_get(_path))
+	var loaded_scenes = Array()
+	for path in _async_load_scene_pathes:
+		var status = ResourceLoader.load_threaded_get_status(path)
+
+		while status == ResourceLoader.ThreadLoadStatus.THREAD_LOAD_IN_PROGRESS:
+			await get_tree().process_frame
+			status = ResourceLoader.load_threaded_get_status(path)
+
+		# エラー
+		if status != ResourceLoader.ThreadLoadStatus.THREAD_LOAD_LOADED:
+			push_error("wait_async_scenes_loaded error:"+path)
+			return
+		
+		# 読み込み完了
+		loaded_scenes.append(ResourceLoader.load_threaded_get(path))
 	
-	# シーンの作成と子ノード	
-	for _scene in _loaded_scene:
-		var _scene_instance = _scene.instantiate()
-		get_tree().root.add_child(_scene_instance)
+	# シーンの作成と子ノード		
+	for scene in loaded_scenes:
+		var scene_instance = scene.instantiate()
+		get_tree().root.add_child(scene_instance)
 		
 	# パスを解放
 	_async_load_scene_pathes.clear()
