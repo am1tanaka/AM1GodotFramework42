@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 
 GameState="*res://am1/framework/scripts/system/game_state.gd"
 SceneChanger="*res://am1/framework/scripts/system/scene_changer.gd"
+SystemSePlayer="*res://am1/framework/scripts/audio/system_se_player.gd"
 
 [display]
 

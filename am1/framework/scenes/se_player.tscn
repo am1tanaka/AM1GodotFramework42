@@ -1,0 +1,10 @@
+[gd_scene load_steps=5 format=3 uid="uid://dkcta3grg0exb"]
+
+[ext_resource type="Script" path="res://am1/framework/scripts/audio/se_player.gd" id="1_ecpax"]
+[ext_resource type="AudioStream" uid="uid://fi017qcgllla" path="res://kenney/se/click.ogg" id="2_c4iuu"]
+[ext_resource type="AudioStream" uid="uid://ckui8v3ion0h1" path="res://kenney/se/start.ogg" id="3_34row"]
+[ext_resource type="AudioStream" uid="uid://blyxkfw0qgm6h" path="res://kenney/se/cancel.ogg" id="4_solwf"]
+
+[node name="SePlayer" type="Node"]
+script = ExtResource("1_ecpax")
+se_resources = Array[AudioStream]([ExtResource("2_c4iuu"), ExtResource("3_34row"), ExtResource("4_solwf")])

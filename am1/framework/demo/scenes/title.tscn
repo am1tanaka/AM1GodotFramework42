@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://do5l3hr4u7864"]
+[gd_scene load_steps=10 format=3 uid="uid://do5l3hr4u7864"]
 
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/title.gd" id="1_8phif"]
 [ext_resource type="Theme" uid="uid://d4iri2l3hdg0f" path="res://am1/settings/framework_theme.tres" id="2_r77xy"]
@@ -7,6 +7,8 @@
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/start_button.gd" id="4_xn26r"]
 [ext_resource type="PackedScene" uid="uid://wc6iioujfcth" path="res://am1/audio_volume/scenes/volume_slider.tscn" id="6_5vnjq"]
 [ext_resource type="Theme" uid="uid://cycrci4m74eim" path="res://am1/audio_volume/themes/audio_volume_theme.tres" id="6_q3g7r"]
+[ext_resource type="AudioStream" uid="uid://dqh5ecai66gh0" path="res://kenney/bgm/title.ogg" id="8_5qjjd"]
+[ext_resource type="PackedScene" uid="uid://bn2un3qcqi0yx" path="res://am1/framework/scenes/bgm_player.tscn" id="8_s5j3o"]
 
 [node name="Title" type="Node" node_paths=PackedStringArray("sliders")]
 script = ExtResource("1_8phif")
@@ -155,6 +157,9 @@ grow_vertical = 0
 key_string = "Se"
 label_text = "SE"
 default_volume = 5
+
+[node name="BgmPlayer" parent="." instance=ExtResource("8_s5j3o")]
+stream = ExtResource("8_5qjjd")
 
 [connection signal="pressed" from="CanvasLayer/ThemeControl/StartButton" to="CanvasLayer/ThemeControl/StartButton" method="_on_pressed"]
 [connection signal="pressed" from="CanvasLayer/ThemeControl/CreditsButton" to="CanvasLayer/ThemeControl/CreditsButton" method="_on_pressed"]

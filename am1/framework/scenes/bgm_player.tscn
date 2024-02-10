@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bn2un3qcqi0yx"]
+
+[ext_resource type="Script" path="res://am1/framework/scripts/audio/audio_player.gd" id="1_psg5b"]
+
+[node name="BgmPlayer" type="AudioStreamPlayer"]
+bus = &"Bgm"
+script = ExtResource("1_psg5b")
