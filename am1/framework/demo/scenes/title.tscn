@@ -1,37 +1,44 @@
-[gd_scene load_steps=9 format=3 uid="uid://do5l3hr4u7864"]
+[gd_scene load_steps=8 format=3 uid="uid://do5l3hr4u7864"]
 
-[ext_resource type="FontFile" uid="uid://cu5qogjtik1se" path="res://mplus/Mplus1Code-Bold.otf" id="1_4xnpx"]
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/title.gd" id="1_8phif"]
-[ext_resource type="Theme" uid="uid://tg7ne1rprkpg" path="res://am1/framework/demo/themes/mplus_small.tres" id="2_mjlia"]
+[ext_resource type="Theme" uid="uid://d4iri2l3hdg0f" path="res://am1/settings/framework_theme.tres" id="2_r77xy"]
 [ext_resource type="Script" path="res://am1/framework/scripts/version.gd" id="2_vxwfm"]
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/credits_button.gd" id="4_6dr51"]
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/start_button.gd" id="4_xn26r"]
+[ext_resource type="PackedScene" uid="uid://wc6iioujfcth" path="res://am1/audio_volume/scenes/volume_slider.tscn" id="6_5vnjq"]
+[ext_resource type="Theme" uid="uid://cycrci4m74eim" path="res://am1/audio_volume/themes/audio_volume_theme.tres" id="6_q3g7r"]
 
-[sub_resource type="Theme" id="Theme_bxs5i"]
-default_font = ExtResource("1_4xnpx")
-default_font_size = 24
-
-[sub_resource type="Theme" id="Theme_lxndn"]
-default_font = ExtResource("1_4xnpx")
-default_font_size = 16
-
-[node name="Title" type="Node"]
+[node name="Title" type="Node" node_paths=PackedStringArray("sliders")]
 script = ExtResource("1_8phif")
+sliders = [NodePath("CanvasLayer/ThemeControl/VolumeSliders/VolumeSliderMaster"), NodePath("CanvasLayer/ThemeControl/VolumeSliders/VolumeSliderBgm"), NodePath("CanvasLayer/ThemeControl/VolumeSliders/VolumeSliderSe")]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="Title" type="Label" parent="CanvasLayer"]
+[node name="ThemeControl" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_r77xy")
+
+[node name="Title" type="Label" parent="CanvasLayer/ThemeControl"]
+layout_mode = 1
 anchors_preset = 14
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
 offset_top = -70.0
 offset_bottom = -40.0
-theme = SubResource("Theme_bxs5i")
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 24
 text = "AM1 Godot Framework 42"
 horizontal_alignment = 1
 
-[node name="Copyright" type="Label" parent="CanvasLayer"]
+[node name="Copyright" type="Label" parent="CanvasLayer/ThemeControl"]
+layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
@@ -40,29 +47,31 @@ offset_top = -40.0
 offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 0
-theme = SubResource("Theme_lxndn")
+theme_override_font_sizes/font_size = 16
 text = "(C) 2023 たなかゆう"
 horizontal_alignment = 1
 
-[node name="Version" type="Label" parent="CanvasLayer"]
+[node name="Version" type="Label" parent="CanvasLayer/ThemeControl"]
+layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -72.0
-offset_top = -23.0
+offset_left = -92.0
+offset_top = -40.0
 offset_right = -20.0
 offset_bottom = -20.0
 grow_horizontal = 0
 grow_vertical = 0
-theme = ExtResource("2_mjlia")
+theme_override_font_sizes/font_size = 16
 text = "Ver 0.0.0"
 script = ExtResource("2_vxwfm")
 
-[node name="StartButton" type="Button" parent="CanvasLayer"]
+[node name="StartButton" type="Button" parent="CanvasLayer/ThemeControl"]
 modulate = Color(1, 1, 1, 0)
 self_modulate = Color(1, 1, 1, 0)
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -70,21 +79,82 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("4_xn26r")
 
-[node name="CreditsButton" type="Button" parent="CanvasLayer"]
+[node name="CreditsButton" type="Button" parent="CanvasLayer/ThemeControl"]
+layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -64.0
-offset_top = -28.0
+offset_left = -184.0
+offset_top = -48.0
 offset_right = -120.0
 offset_bottom = -20.0
 grow_horizontal = 0
 grow_vertical = 0
-theme = ExtResource("2_mjlia")
+theme = ExtResource("2_r77xy")
 text = "Credits"
 script = ExtResource("4_6dr51")
 
-[connection signal="pressed" from="CanvasLayer/StartButton" to="CanvasLayer/StartButton" method="_on_pressed"]
-[connection signal="pressed" from="CanvasLayer/CreditsButton" to="CanvasLayer/CreditsButton" method="_on_pressed"]
+[node name="VolumeSliders" type="Control" parent="CanvasLayer/ThemeControl"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("6_q3g7r")
+
+[node name="VolumeSliderMaster" parent="CanvasLayer/ThemeControl/VolumeSliders" instance=ExtResource("6_5vnjq")]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = -20.0
+offset_bottom = -124.0
+grow_horizontal = 0
+grow_vertical = 0
+key_string = "Master"
+label_text = "Master"
+default_volume = 3
+
+[node name="VolumeSliderBgm" parent="CanvasLayer/ThemeControl/VolumeSliders" instance=ExtResource("6_5vnjq")]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = -20.0
+offset_bottom = -92.0
+grow_horizontal = 0
+grow_vertical = 0
+key_string = "Bgm"
+label_text = "BGM"
+default_volume = 5
+
+[node name="VolumeSliderSe" parent="CanvasLayer/ThemeControl/VolumeSliders" instance=ExtResource("6_5vnjq")]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = -20.0
+offset_bottom = -60.0
+grow_horizontal = 0
+grow_vertical = 0
+key_string = "Se"
+label_text = "SE"
+default_volume = 5
+
+[connection signal="pressed" from="CanvasLayer/ThemeControl/StartButton" to="CanvasLayer/ThemeControl/StartButton" method="_on_pressed"]
+[connection signal="pressed" from="CanvasLayer/ThemeControl/CreditsButton" to="CanvasLayer/ThemeControl/CreditsButton" method="_on_pressed"]

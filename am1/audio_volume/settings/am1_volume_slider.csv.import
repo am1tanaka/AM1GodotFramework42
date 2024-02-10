@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://dg6ctx662a0fw"
+
+[deps]
+
+files=["res://am1/audio_volume/settings/am1_volume_slider.ja.translation", "res://am1/audio_volume/settings/am1_volume_slider.en.translation"]
+
+source_file="res://am1/audio_volume/settings/am1_volume_slider.csv"
+dest_files=["res://am1/audio_volume/settings/am1_volume_slider.ja.translation", "res://am1/audio_volume/settings/am1_volume_slider.en.translation"]
+
+[params]
+
+compress=true
+delimiter=0

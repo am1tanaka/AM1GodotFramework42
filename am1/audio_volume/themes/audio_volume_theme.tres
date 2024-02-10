@@ -1,0 +1,40 @@
+[gd_resource type="Theme" load_steps=9 format=3 uid="uid://cycrci4m74eim"]
+
+[ext_resource type="Texture2D" uid="uid://b3mh7qr0wm82u" path="res://am1/audio_volume/images/volume.png" id="1_wqqit"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_s2ra7"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_ut51k"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_dalcx"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_ic865"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_uaxk2"]
+texture = ExtResource("1_wqqit")
+axis_stretch_horizontal = 1
+modulate_color = Color(0.0384, 0.96, 0.0384, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_s1jdn"]
+texture = ExtResource("1_wqqit")
+axis_stretch_horizontal = 1
+modulate_color = Color(0.0368, 0.92, 0.0368, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ulbje"]
+content_margin_bottom = 24.0
+texture = ExtResource("1_wqqit")
+modulate_color = Color(0, 0, 0, 0.501961)
+
+[resource]
+HSlider/constants/center_grabber = 0
+HSlider/constants/grabber_offset = 0
+HSlider/icons/grabber = SubResource("ImageTexture_s2ra7")
+HSlider/icons/grabber_disabled = SubResource("ImageTexture_ut51k")
+HSlider/icons/grabber_highlight = SubResource("ImageTexture_dalcx")
+HSlider/icons/tick = SubResource("ImageTexture_ic865")
+HSlider/styles/grabber_area = SubResource("StyleBoxTexture_uaxk2")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxTexture_s1jdn")
+HSlider/styles/slider = SubResource("StyleBoxTexture_ulbje")
+Label/colors/font_color = Color(0.901961, 0.901961, 0.901961, 1)
+Label/colors/font_shadow_color = Color(0, 0, 0, 0.752941)
+Label/font_sizes/font_size = 16

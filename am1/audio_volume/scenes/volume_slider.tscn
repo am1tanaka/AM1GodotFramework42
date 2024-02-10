@@ -1,0 +1,39 @@
+[gd_scene load_steps=3 format=3 uid="uid://wc6iioujfcth"]
+
+[ext_resource type="Theme" uid="uid://cycrci4m74eim" path="res://am1/audio_volume/themes/audio_volume_theme.tres" id="1_o2it8"]
+[ext_resource type="Script" path="res://am1/audio_volume/scripts/am1_volume_slider.gd" id="2_d0hsq"]
+
+[node name="VolumeSlider" type="Control"]
+custom_minimum_size = Vector2(160, 24)
+layout_mode = 3
+anchors_preset = 0
+offset_left = 20.0
+offset_top = 20.0
+theme = ExtResource("1_o2it8")
+script = ExtResource("2_d0hsq")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -60.0
+offset_top = -21.0
+offset_right = 48.0
+offset_bottom = 2.0
+grow_vertical = 2
+text = "Master"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="HSlider" type="HSlider" parent="."]
+custom_minimum_size = Vector2(100, 24)
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 5.0
+value = 2.0
