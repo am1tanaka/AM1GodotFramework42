@@ -2,6 +2,8 @@ extends Node
 
 ## ゲームシーンを管轄するクラス
 
+@onready var _bgm_player := $BgmPlayer as AudioPlayer
+
 ## ゲームの状態の列挙子
 enum State {
 	None = -1,
@@ -20,7 +22,7 @@ var next_state = State.Boot
 func _ready():
 	SceneChanger.set_init_scene_method(_init_game)
 
-func _process(delta):
+func _process(_delta):
 	# 状態切り替え
 	_change_state()
 
@@ -51,6 +53,7 @@ func _init_game():
 	# 操作開始
 	next_state = State.Game
 	GameState.control_on()
+	_bgm_player.play_bgm()
 
 ## 更新処理
 func _process_state():

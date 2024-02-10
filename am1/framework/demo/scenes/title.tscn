@@ -4,11 +4,15 @@
 [ext_resource type="Theme" uid="uid://d4iri2l3hdg0f" path="res://am1/settings/framework_theme.tres" id="2_r77xy"]
 [ext_resource type="Script" path="res://am1/framework/scripts/version.gd" id="2_vxwfm"]
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/credits_button.gd" id="4_6dr51"]
-[ext_resource type="Script" path="res://am1/framework/demo/scripts/start_button.gd" id="4_xn26r"]
 [ext_resource type="PackedScene" uid="uid://wc6iioujfcth" path="res://am1/audio_volume/scenes/volume_slider.tscn" id="6_5vnjq"]
 [ext_resource type="Theme" uid="uid://cycrci4m74eim" path="res://am1/audio_volume/themes/audio_volume_theme.tres" id="6_q3g7r"]
 [ext_resource type="AudioStream" uid="uid://dqh5ecai66gh0" path="res://kenney/bgm/title.ogg" id="8_5qjjd"]
 [ext_resource type="PackedScene" uid="uid://bn2un3qcqi0yx" path="res://am1/framework/scenes/bgm_player.tscn" id="8_s5j3o"]
+
+[sub_resource type="GDScript" id="GDScript_1u7qg"]
+script/source = "extends Node
+
+"
 
 [node name="Title" type="Node" node_paths=PackedStringArray("sliders")]
 script = ExtResource("1_8phif")
@@ -79,7 +83,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("4_xn26r")
+script = SubResource("GDScript_1u7qg")
 
 [node name="CreditsButton" type="Button" parent="CanvasLayer/ThemeControl"]
 layout_mode = 1
@@ -105,6 +109,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme = ExtResource("6_q3g7r")
 
 [node name="VolumeSliderMaster" parent="CanvasLayer/ThemeControl/VolumeSliders" instance=ExtResource("6_5vnjq")]
@@ -161,5 +166,5 @@ default_volume = 5
 [node name="BgmPlayer" parent="." instance=ExtResource("8_s5j3o")]
 stream = ExtResource("8_5qjjd")
 
-[connection signal="pressed" from="CanvasLayer/ThemeControl/StartButton" to="CanvasLayer/ThemeControl/StartButton" method="_on_pressed"]
+[connection signal="pressed" from="CanvasLayer/ThemeControl/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/ThemeControl/CreditsButton" to="CanvasLayer/ThemeControl/CreditsButton" method="_on_pressed"]

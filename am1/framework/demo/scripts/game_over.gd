@@ -25,7 +25,7 @@ func _ready():
 	_tween.finished.connect(GameState.control_on)
 
 ## ゲームオーバーの更新処理
-func _process(delta):
+func _process(_delta):
 	if !GameState.can_control:
 		return
 
