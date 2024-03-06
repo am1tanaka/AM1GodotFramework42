@@ -7,9 +7,10 @@ extends Node
 ## この処理は前のシーンが実行されている状態で動く。
 
 func _enter_tree():
-	var fade = SceneChanger.load_cover("res://am1/framework/scenes/fade.tscn") as ScreenCover
 	
 	## 画面覆い開始
+	var fade = SceneChanger.load_cover("res://am1/framework/scenes/fade.tscn") as ScreenCover
+	AudioPlayer
 	fade.start_cover(Color(0.0, 0.0, 0.0, 0.0), 1.0)
 
 	## シーン読み込み開始
