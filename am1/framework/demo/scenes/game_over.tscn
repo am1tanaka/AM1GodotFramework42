@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://j2xs22qp2q0t"]
 
-[ext_resource type="Theme" uid="uid://xro8qqamqkdy" path="res://am1/framework/demo/themes/mplus_medium.tres" id="1_08rmo"]
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/game_over.gd" id="1_71v1g"]
+[ext_resource type="Theme" uid="uid://d4iri2l3hdg0f" path="res://am1/settings/framework_theme.tres" id="2_gldlb"]
 
 [node name="GameOver" type="Node"]
 script = ExtResource("1_71v1g")
@@ -37,5 +37,8 @@ offset_right = 46.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_08rmo")
+theme = ExtResource("2_gldlb")
+theme_type_variation = &"LabelMedium"
 text = "GAME OVER"
+horizontal_alignment = 1
+vertical_alignment = 1

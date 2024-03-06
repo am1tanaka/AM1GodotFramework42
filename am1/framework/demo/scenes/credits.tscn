@@ -1,13 +1,23 @@
 [gd_scene load_steps=2 format=3 uid="uid://c7pl4xqg7u0uu"]
 
-[ext_resource type="Theme" uid="uid://xro8qqamqkdy" path="res://am1/framework/demo/themes/mplus_medium.tres" id="1_fk2wu"]
+[ext_resource type="Theme" uid="uid://d4iri2l3hdg0f" path="res://am1/settings/framework_theme.tres" id="1_hdhgi"]
 
 [node name="Credits" type="Node"]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = 10
 
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_hdhgi")
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/Control"]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -15,25 +25,28 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.25098)
 
-[node name="CloseButton" type="Button" parent="CanvasLayer"]
+[node name="CloseButton" type="Button" parent="CanvasLayer/Control"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -24.0
+offset_left = -44.0
 offset_top = 20.0
 offset_right = -20.0
-offset_bottom = 48.0
+offset_bottom = 68.0
 grow_horizontal = 0
-theme = ExtResource("1_fk2wu")
+theme_type_variation = &"ButtonMedium"
 text = "X"
 
-[node name="Label" type="Label" parent="CanvasLayer"]
+[node name="Label" type="Label" parent="CanvasLayer/Control"]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_fk2wu")
+theme_type_variation = &"LabelMedium"
 text = "
 企画・開発
 たなかゆう

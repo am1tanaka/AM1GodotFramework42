@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://caxgtaifeucfc"]
 
-[ext_resource type="Theme" uid="uid://xro8qqamqkdy" path="res://am1/framework/demo/themes/mplus_medium.tres" id="1_dnld8"]
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/game_scene.gd" id="1_wxx4f"]
+[ext_resource type="Theme" uid="uid://d4iri2l3hdg0f" path="res://am1/settings/framework_theme.tres" id="2_t0m25"]
 [ext_resource type="PackedScene" uid="uid://bn2un3qcqi0yx" path="res://am1/framework/scenes/bgm_player.tscn" id="3_c0ajy"]
 [ext_resource type="AudioStream" uid="uid://d3s560sxrdg40" path="res://kenney/bgm/game.ogg" id="4_bca3y"]
 
@@ -32,8 +32,10 @@ offset_top = 10.0
 offset_right = 48.0
 offset_bottom = 40.0
 grow_horizontal = 2
-theme = ExtResource("1_dnld8")
+theme = ExtResource("2_t0m25")
+theme_type_variation = &"LabelMedium"
 text = "000000"
+horizontal_alignment = 1
 
 [node name="BgmPlayer" parent="." instance=ExtResource("3_c0ajy")]
 stream = ExtResource("4_bca3y")

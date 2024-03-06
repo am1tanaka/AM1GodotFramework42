@@ -1,7 +1,0 @@
-[gd_resource type="Theme" load_steps=2 format=3 uid="uid://xro8qqamqkdy"]
-
-[ext_resource type="FontFile" uid="uid://cu5qogjtik1se" path="res://mplus/Mplus1Code-Bold.otf" id="1_v3kun"]
-
-[resource]
-default_font = ExtResource("1_v3kun")
-default_font_size = 32

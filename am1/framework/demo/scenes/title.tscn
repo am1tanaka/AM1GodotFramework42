@@ -34,7 +34,7 @@ offset_top = -70.0
 offset_bottom = -40.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 24
+theme_type_variation = &"LabelMedium"
 text = "AM1 Godot Framework 42"
 horizontal_alignment = 1
 
@@ -48,8 +48,7 @@ offset_top = -40.0
 offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_font_sizes/font_size = 16
-text = "(C) 2023 たなかゆう"
+text = "(C) 2023-2024 たなかゆう"
 horizontal_alignment = 1
 
 [node name="Version" type="Label" parent="CanvasLayer/ThemeControl"]
@@ -65,7 +64,6 @@ offset_right = -20.0
 offset_bottom = -20.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_font_sizes/font_size = 16
 text = "Ver 0.0.0"
 script = ExtResource("2_vxwfm")
 
