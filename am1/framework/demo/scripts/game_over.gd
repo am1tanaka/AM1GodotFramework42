@@ -30,7 +30,7 @@ func _process(_delta):
 		return
 
 	if Input.is_action_just_pressed("Accept"):
-		var _bgm = get_tree().root.get_node("/root/Game/BgmPlayer") as AudioPlayer
-		if _bgm:
-			_bgm.fade_out(1.0)
+		var _game = get_tree().root.get_node("/root/Game") as GameScene
+		if _game:
+			_game.bgm_player.fade_out(1.0)
 		SceneChanger.change_scene("res://am1/framework/demo/scripts/start_title.gd")

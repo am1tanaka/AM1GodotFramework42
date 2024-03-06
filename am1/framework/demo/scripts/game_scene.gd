@@ -1,8 +1,9 @@
+class_name GameScene
 extends Node
 
 ## ゲームシーンを管轄するクラス
 
-@onready var _bgm_player := $BgmPlayer as AudioPlayer
+@onready var bgm_player := $BgmPlayer as AudioPlayer
 
 ## ゲームの状態の列挙子
 enum State {
@@ -53,7 +54,7 @@ func _init_game():
 	# 操作開始
 	next_state = State.Game
 	GameState.control_on()
-	_bgm_player.play_bgm()
+	bgm_player.play_bgm()
 
 ## 更新処理
 func _process_state():
