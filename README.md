@@ -6,7 +6,9 @@
 - シーンの非同期読み込みに対応した状態切り替え
 - BGMと効果音のボリューム制御と保存
 
+## 予定
 
+https://github.com/users/am1tanaka/projects/6/views/1
 
 
 ## 使用アセット
