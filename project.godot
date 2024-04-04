@@ -16,6 +16,10 @@ run/main_scene="res://am1/framework/demo/scenes/title.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
+[audio]
+
+buses/default_bus_layout="res://am1/audio_volume/settings/audio_bus_layout.tres"
+
 [autoload]
 
 GameState="*res://am1/framework/scripts/system/game_state.gd"
