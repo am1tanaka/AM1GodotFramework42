@@ -29,6 +29,10 @@ window/size/viewport_height=540
 window/size/resizable=false
 window/stretch/mode="viewport"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
 [input]
 
 Accept={
