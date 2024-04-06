@@ -6,9 +6,6 @@ extends Node
 ## @tutorial(シーンの管理クラス):      https://datgm23.github.io/AM1GodotFramework42/docs/examples/scene_manage_class.md
 ## @tutorial(シーンを切り替えるクラス): https://datgm23.github.io/AM1GodotFramework42/docs/examples/change_scene_sequence.md
 
-## 最初に画面を覆うシーン
-const _start_cover: PackedScene = preload("res://am1/framework/scenes/fade.tscn")
-
 ## 画面を覆って、読み込みや解放が完了したら呼び出すシグナル
 signal covered_loaded_unloaded
 
@@ -19,18 +16,22 @@ signal release_scenes
 var _cover_instance: ScreenCover
 
 ## 最初の起動フラグ
-var _first_boot: bool = true
+var is_booting: bool:
+	get:
+		return _is_booting
+var _is_booting: bool = true
 
 ## 非同期読み込み中のシーン名
-var _async_load_scene_pathes: Array[String]
+var _async_load_scene_pathes: Array[String] = []
 
-## 画面を覆うシーンや初期化などを持たせるためのサブシーンを作成してサブシーンにする。
-## また、最初のフェードを取得して、画面を覆っておく。
-func _ready():
-	# 画面を覆う
-	_cover_instance = _start_cover.instantiate()
-	add_child(_cover_instance)
-	_cover_instance.start_cover(Color(1.0, 1.0, 1.0, 1.0), 0)
+## 必要なシーンの配列
+var _need_scene_paths: Array[String] = []
+
+## リロード対象のシーン名の配列
+var _reload_scene_paths: Array[String] = []
+
+## 読み込んだシーンのパス
+var _loaded_scene_paths: Array[String] = []
 
 ## シーン切り替えをするときに、シーンの読み込みなどのシーケンスを処理するスクリプトのパスを渡して呼び出す。[br]
 ## [param change_scene_script_path] 切り替え処理を実行するスクリプトのパス
@@ -56,8 +57,8 @@ func change_scene(change_scene_script_path):
 func set_init_scene_method(init_method: Callable):
 	GameState.control_off()
 
-	if _first_boot:
-		_first_boot = false
+	if is_booting:
+		_is_booting = false
 		init_method.call()
 	else:
 		covered_loaded_unloaded.connect(init_method)
@@ -83,6 +84,28 @@ func uncover(sec: float):
 	_cover_instance.start_uncover(sec)
 	await _cover_instance.wait_cover()
 	_cover_instance.queue_free()
+
+## 非同期でシーンの読み込みを開始する。
+## シーンが読み込み済みなら、リロードするかどうかを引数で確認する。
+## リロードするシーンなら後の処理で解放と読み込みをするために配列に取っておく。
+## [param scene_pathes] 非同期に読み込むシーンパスの配列
+func async_load_scenes_with_reload(scenes: LoadScenes):
+	_need_scene_paths.clear()
+	_reload_scene_paths.clear()
+	scenes.all(_listup_scene_path)
+	
+	async_load_scenes(_need_scene_paths)
+
+## シーンを読み込み状況に応じて読み込みとリロードの配列にリストアップする
+func _listup_scene_path(sc):
+	if !_loaded_scene_paths.has(sc.scene_path):
+		# 読み込まれていなければ必要なシーンにリストアップ
+		_need_scene_paths.append(sc.scene_path)
+	elif sc.is_reload_when_exists:
+		# 読み込まれていて、かつ、リロード対象ならリロードにリストアップ
+		_reload_scene_paths.append(sc.scene_path)
+
+	return true
 
 ## 非同期でシーンの読み込みを開始する。
 ## [param scene_pathes] 非同期に読み込むシーンパスの配列
@@ -164,4 +187,5 @@ func free_scenes(scene_names: Array[String]):
 			if node.name == scene_name:
 				node.queue_free()
 				break
+
 

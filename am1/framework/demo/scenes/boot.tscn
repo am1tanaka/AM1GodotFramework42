@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://r1j4ulx66a2g"]
+
+[ext_resource type="Script" path="res://am1/framework/demo/scripts/boot.gd" id="1_33qe0"]
+
+[node name="Boot" type="Node"]
+script = ExtResource("1_33qe0")
+cover_color = Color(1, 1, 1, 1)
