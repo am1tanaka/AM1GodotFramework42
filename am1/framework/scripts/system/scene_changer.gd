@@ -1,11 +1,18 @@
 extends Node
 
 ## シーンの遷移を管理するクラス。[br]
-## 起動用のシーンを作成して、_enter_tree()に画面を覆うシーンとシーンの読み込み開始処理を呼び出す。
-## シーンの初期化は、_ready関数でset_init_scene_method()を呼び出して初期化メソッドを登録する。
-## 登録した初期化メソッドは画面が隠されて、シーンの入れ替えが終わったら呼び出す。
-## 起動シーンの例は以下の通り。[br]
+## 起動[br]
+## 移動用のシーンを作成して、_enter_tree()に画面を覆うシーンとシーンの読み込み開始処理を呼び出す。
 ## @tutorial(起動シーンのスクリプト):	https://github.com/am1tanaka/AM1GodotFramework42/blob/master/am1/framework/demo/scripts/boot.gd
+## [br]
+## シーンの切り替え[br]
+## 切り替え元のシーンでSceneChanger.load_cover()で画面を覆うシーンの読み込みと開始をして、
+## SceneChanger.change_scene_and_wait_cover()を実行する。
+## [br]
+## シーンの初期化[br]
+## _ready関数でset_init_scene_method()を呼び出して初期化メソッドを登録する。
+## 登録した初期化メソッドは画面を覆う処理とシーンの入れ替えが完了したら呼び出される。
+## [br]
 ## set_init_scene_method()に渡す初期化メソッドの例は以下の通り。[br]
 ## @tutorial(シーンの管理クラス):      https://datgm23.github.io/AM1GodotFramework42/docs/examples/scene_manage_class.md
 ## @tutorial(シーンを切り替えるクラス): https://datgm23.github.io/AM1GodotFramework42/docs/examples/change_scene_sequence.md
@@ -37,36 +44,6 @@ var _reload_scene_paths: Array[String] = []
 ## 読み込んだシーンのパス
 var _loaded_scene_paths: Array[String] = []
 
-## シーン切り替えをするときに、シーンの読み込みなどのシーケンスを処理するスクリプトのパスを渡して呼び出す。[br]
-## [param change_scene_script_path] 切り替え処理を実行するスクリプトのパス
-func change_scene(change_scene_script_path):
-	# 操作禁止
-	GameState.control_off()
-
-	# 切り替えシーンの読み込み
-	if ResourceLoader.load_threaded_request(change_scene_script_path) != Error.OK:
-		push_error("change scene error: "+change_scene_script_path)
-		return
-	
-	# 読み込み待ち
-	var script = ResourceLoader.load_threaded_get(change_scene_script_path)
-	var script_instance = script.new()
-	add_child(script_instance)
-
-## メインシーンの_readyから呼び出される。
-## 初回起動のときはすぐに渡された初期化メソッドを呼び出して最初のシーンを開始する。
-## ２回目以降に呼び出されたときは渡されたメソッドをcovered_laoded_uncoveredにconnectして、
-## 次のシーンの読み込みや画面を覆う演出を終えてからemitする。[br]
-## [param init_method] 画面を覆って非同期読み込みが完了したら呼び出す初期化処理[br]
-func set_init_scene_method(init_method: Callable):
-	GameState.control_off()
-
-	if is_booting:
-		_is_booting = false
-		init_method.call()
-	else:
-		covered_loaded_unloaded.connect(init_method)
-
 ## 指定のパスのシーンを読み込んで、子ノードにしてインスタンスを返す。[br]
 ## [param cover_path] 画面を覆うシーンのパス
 func load_cover(cover_path) -> ScreenCover:
@@ -93,6 +70,9 @@ func uncover(sec: float):
 
 ## 画面を覆う処理を開始してから呼び出す。
 func change_scenes_and_wait_covered(scenes: LoadScenes):
+	# 操作禁止
+	GameState.control_off()
+
 	# 画面を覆うために1フレーム待つ
 	await get_tree().process_frame
 
@@ -103,7 +83,7 @@ func change_scenes_and_wait_covered(scenes: LoadScenes):
 	await wait_cover_finished()
 
 	# 不要なシーンとリロード予定のシーンを解放する
-	unload_unnecessary_scenes(scenes)
+	_unload_unnecessary_scenes(scenes)
 
 	# リロードシーンを読み込む
 	async_load_scenes(_reload_scene_paths)
@@ -117,8 +97,22 @@ func change_scenes_and_wait_covered(scenes: LoadScenes):
 	# 切り替え処理中に受け取った初期化処理を呼び出す
 	covered_loaded_unloaded.emit()
 
+## メインシーンの_readyから呼び出される。
+## 初回起動のときはすぐに渡された初期化メソッドを呼び出して最初のシーンを開始する。
+## ２回目以降に呼び出されたときは渡されたメソッドをcovered_laoded_uncoveredにconnectして、
+## 次のシーンの読み込みや画面を覆う演出を終えてからemitする。[br]
+## [param init_method] 画面を覆って非同期読み込みが完了したら呼び出す初期化処理[br]
+func set_init_scene_method(init_method: Callable):
+	GameState.control_off()
+
+	if is_booting:
+		_is_booting = false
+		init_method.call()
+	else:
+		covered_loaded_unloaded.connect(init_method)
+
 ## 引数で受け取ったシーンに含まれないシーンと、含まれていてリロードが指定されているシーンを解放する。
-func unload_unnecessary_scenes(scenes: LoadScenes):
+func _unload_unnecessary_scenes(scenes: LoadScenes):
 	var loaded_paths = _get_root_scenes()
 	var keys = loaded_paths.keys()
 
