@@ -12,7 +12,7 @@ extends Node
 @export var _load_scenes: LoadScenes
 
 ## 最初のシーンを読み込む処理
-func _enter_tree():
+func _ready():
 	## 画面覆い開始
 	var cover = SceneChanger.load_cover(_cover_scene_path) as ScreenCover
 	if cover:

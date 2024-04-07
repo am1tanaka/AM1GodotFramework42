@@ -5,6 +5,7 @@
 
 [node name="GameOver" type="Node"]
 script = ExtResource("1_71v1g")
+_title_scenes_resource = "res://am1/framework/demo/settings/title_scenes.tres"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

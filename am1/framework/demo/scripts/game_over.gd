@@ -2,6 +2,8 @@ extends Node
 
 ## ゲームオーバーシーンの管理クラス
 
+@export_file("*.tres") var _title_scenes_resource
+
 @onready var _tween = create_tween()
 @onready var _color_rect: ColorRect = $CanvasLayer/ColorRect as ColorRect
 @onready var _game_over_label: Label = $CanvasLayer/GameOver as Label
@@ -33,4 +35,14 @@ func _process(_delta):
 		var _game = get_tree().root.get_node("/root/Game") as GameScene
 		if _game:
 			_game.bgm_player.fade_out(1.0)
-		SceneChanger.change_scene("res://am1/framework/demo/scripts/start_title.gd")
+		_change_title()
+
+## タイトルシーンに切り替える処理
+func _change_title():
+	## 画面覆い開始
+	var fade = SceneChanger.load_cover("res://am1/framework/scenes/fade.tscn") as ScreenCover
+	fade.start_cover(Color.BLACK, 1.0)
+
+	## シーン読み込み開始
+	var scenes = load(_title_scenes_resource)
+	SceneChanger.change_scenes_and_wait_covered(scenes)

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="LoadScenes" load_steps=4 format=3 uid="uid://qyf2ktb3gk7o"]
+
+[ext_resource type="Script" path="res://am1/framework/scripts/system/load_scene_data.gd" id="1_rl5bc"]
+[ext_resource type="Script" path="res://am1/framework/scripts/system/load_scenes.gd" id="2_c7027"]
+
+[sub_resource type="Resource" id="Resource_ohaju"]
+script = ExtResource("1_rl5bc")
+scene_path = "res://am1/framework/demo/scenes/title.tscn"
+is_reload_when_exists = true
+
+[resource]
+script = ExtResource("2_c7027")
+scenes = Array[ExtResource("1_rl5bc")]([SubResource("Resource_ohaju")])
