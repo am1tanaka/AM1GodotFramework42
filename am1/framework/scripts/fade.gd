@@ -9,14 +9,27 @@ var _tween: Tween
 ## 塗りつぶしのノードにアタッチされているColorRectクラスのインスタンス。
 @onready var _color_rect : ColorRect = $CanvasLayer/ColorRect
 
+var _fade_color: Color
+var _seconds: float
+var _is_requested := false
+
 ## 読み込みと同時に消す。
 func _ready():
 	_color_rect.color.a = 0
+	if _is_requested:
+		start_cover(_fade_color, _seconds)
 
 ## フェードアウトを開始する。[br]
 ## [param color] フェードの色[br]
 ## [param sec] フェード秒数[br]
 func start_cover(color: Color, sec: float):
+	if !_color_rect:
+		_fade_color = color
+		_seconds = sec
+		_is_requested = true
+		return
+	_is_requested = false
+	
 	if _tween:
 		_tween.kill()
 	

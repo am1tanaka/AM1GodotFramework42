@@ -66,13 +66,15 @@ func set_init_scene_method(init_method: Callable):
 ## 指定のパスのシーンを読み込んで、子ノードにしてインスタンスを返す。[br]
 ## [param cover_path] 画面を覆うシーンのパス
 func load_cover(cover_path) -> ScreenCover:
+	if !cover_path:
+		return null
 	if ResourceLoader.load_threaded_request(cover_path) != Error.OK:
 		push_error("load_cover error:"+cover_path)
-		return
+		return null
 	
 	var _cover_node = ResourceLoader.load_threaded_get(cover_path)
-	_cover_instance = _cover_node.instantiate()
-	get_tree().root.add_child(_cover_instance)
+	_cover_instance = _cover_node.instantiate() as ScreenCover
+	add_child(_cover_instance)
 	return _cover_instance
 
 ## 画面の覆いを解除する。awaitで解除を待つことができる。
@@ -85,6 +87,58 @@ func uncover(sec: float):
 	await _cover_instance.wait_cover()
 	_cover_instance.queue_free()
 
+## 画面を覆う処理を開始してから呼び出す。
+func change_scenes_and_wait_covered(scenes: LoadScenes):
+	# 画面を覆うために1フレーム待つ
+	await get_tree().process_frame
+
+	# 渡されたシーンのうち、読み込まれていないものを非同期読み込み開始
+	async_load_scenes_with_reload(scenes)
+
+	# 画面が覆われるのを待つ
+	await wait_cover_finished()
+
+	# 不要なシーンとリロード予定のシーンを解放する
+	unload_unnecessary_scenes(scenes)
+
+	# リロードシーンを読み込む
+	async_load_scenes(_reload_scene_paths)
+
+	# 非同期読み込み待ち
+	await wait_async_scenes_loaded()
+
+	# 登録された処理を実行
+	await get_tree().process_frame
+
+	# 切り替え処理中に受け取った初期化処理を呼び出す
+	covered_loaded_unloaded.emit()
+
+## 引数で受け取ったシーンに含まれないシーンと、含まれていてリロードが指定されているシーンを解放する。
+func unload_unnecessary_scenes(scenes: LoadScenes):
+	var loaded_paths = _get_root_scenes()
+	var keys = loaded_paths.keys()
+
+	# 必要ないものを消す
+	for key in keys:
+		for scene in scenes.scenes:
+			if !scene.scene_path == key:
+				loaded_paths[key].queue_free()
+	
+	# リロード対象を消す
+	for sc in scenes.scenes:
+		if sc.is_reload_when_exists && keys.has(sc.scene_path):
+			loaded_paths[sc.scene_path].queue_free()
+
+## ルートにあるシーンのファイルパスを配列にして返す。
+func _get_root_scenes() -> Dictionary:
+	var nodes = get_tree().root.get_children()
+	var result := Dictionary()
+	for node in nodes:
+		var file_path = node.scene_file_path
+		if !file_path.is_empty():
+			result[file_path] = node
+	return result
+
 ## 非同期でシーンの読み込みを開始する。
 ## シーンが読み込み済みなら、リロードするかどうかを引数で確認する。
 ## リロードするシーンなら後の処理で解放と読み込みをするために配列に取っておく。
@@ -92,7 +146,7 @@ func uncover(sec: float):
 func async_load_scenes_with_reload(scenes: LoadScenes):
 	_need_scene_paths.clear()
 	_reload_scene_paths.clear()
-	scenes.all(_listup_scene_path)
+	scenes.scenes.all(_listup_scene_path)
 	
 	async_load_scenes(_need_scene_paths)
 
