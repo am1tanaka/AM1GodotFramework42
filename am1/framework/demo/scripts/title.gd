@@ -9,7 +9,7 @@ extends Node
 
 ## シーンが開始したら初期化関数を登録
 func _ready():
-	SceneChanger.set_init_scene_method(init_title)
+	SceneChanger.set_init_scene_method(_init_title)
 
 	for slider in sliders:
 		var storage = AM1AudioVolumeConfigFile.new()
@@ -19,7 +19,7 @@ func _ready():
 	sliders[2].volume_changed.connect(func(): SystemSePlayer.player.play(SEPlayer.Clip.Click))
 
 ## タイトルシーンの初期化
-func init_title():
+func _init_title():
 	await SceneChanger.uncover(1.0)
 	GameState.control_on()
 	_bgm_player.play_bgm()

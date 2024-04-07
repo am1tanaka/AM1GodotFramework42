@@ -1,4 +1,85 @@
-# シーン切り替え
+# 起動とシーン切り替え
+
+## 起動のさせかた
+
+メインシーンに`Boot`を設定して、Bootシーンから起動するようにします。Bootシーンを開いて、必要な情報をインスペクターに設定します。
+
+- Cover Color
+  - 起動時に画面を塗りつぶす色です
+- Cover Scene Path
+  - 画面を覆う処理をするシーンのパスです。デフォルトでは`res://am1/framework/scenes/fade.tscn`が設定されています。起動時の演出を変えたい場合はカスタムのシーンと処理を作成して、ここに設定します
+- Load Scenes
+  - 最初の起動で読み込むシーンを指定します
+  - タイトルのように複数のシーンから移行するときに使い回せるようにResourceを継承した配列になっています。必要に応じて設定を保存すれば他のシーンで利用できます
+  - デフォルトでは、すでに読み込み済みのシーンがあったら新規に読み込まずにもとのシーンをそのまま残します
+  - リトライ時などの読み込み済みのシーンを新規に読み込み直す場合は、配列のis_reload_when_existsにチェックを入れます
+  
+
+## シーン状態の切り替え方
+
+シーン状態を切り替える処理は2ステップで実行します。
+
+1. 元のシーン状態で、画面を覆う処理の読み込みと開始、必要なシーンをSceneChangerに渡してシーン状態の切り替えを開始します
+2. 次のシーンの_readyでSceneChangerに初期化処理を渡して、画面が隠れたあとにコールバックさせて、シーンの初期化や画面を表示する処理を実行します
+
+### シーン状態の切り替えをはじめる処理
+1つめの処理の例を2つ示します。以下はノードのインスペクターで必要なシーンなどを設定するスクリプトです。
+
+```python
+## 画面を覆うシーンの色
+@export var cover_color := Color.BLACK
+
+## 画面を覆うシーンのパス
+@export_file("*.tscn") var _cover_scene_path
+
+## 最初のシーンを読み込むスクリプト
+@export var _load_scenes: LoadScenes
+
+func _change_next_scene():
+	## 画面覆い開始
+	var cover = SceneChanger.load_cover(_cover_scene_path) as ScreenCover
+  cover.start_cover(cover_color, 0)
+
+	## シーン読み込み開始
+	SceneChanger.change_scenes_and_wait_covered(_load_scenes)
+```
+
+シーンリストを保存済みの場合は以下のようなコードにします。
+
+```python
+@export_file("*.tres") var _scenes_resource
+@export_file("*.tscn") var _cover_scene_path
+
+func _change_title():
+	## 画面覆い開始
+	var cover = SceneChanger.load_cover(_cover_scene_path) as ScreenCover
+	cover.start_cover(Color.BLACK, 1.0)
+
+	## シーン読み込み開始
+	var scenes = load(_scenes_resource)
+	SceneChanger.change_scenes_and_wait_covered(scenes)
+```
+
+### 切り替えたシーンの初期化と開始
+
+シーン状態の初期化や画面の覆いを外す処理は、シーンが読み込まれたときに初期化メソッドをSceneChangerに登録することで実行します。
+
+```python
+func _ready():
+	SceneChanger.set_init_scene_method(_init_scene)
+
+## シーンの初期化と開始
+func _init_scene():
+	await SceneChanger.uncover(1.0)
+	GameState.control_on()
+	_bgm_player.play_bgm()
+```
+
+シーンの読み込みと画面を覆う処理が完了したら、登録した_init_scene()がSceneChangerから呼び出されます。
+_init_scene()では、画面の覆いを解除やその他の必要な初期化を実行して、該当するシーン状態を開始します。
+
+
+
 
 ## 構成
 
