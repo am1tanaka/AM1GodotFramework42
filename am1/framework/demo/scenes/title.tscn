@@ -1,17 +1,29 @@
-[gd_scene load_steps=9 format=3 uid="uid://do5l3hr4u7864"]
+[gd_scene load_steps=13 format=3 uid="uid://do5l3hr4u7864"]
 
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/title.gd" id="1_8phif"]
 [ext_resource type="Theme" uid="uid://d4iri2l3hdg0f" path="res://am1/settings/framework_theme.tres" id="2_r77xy"]
+[ext_resource type="Script" path="res://am1/framework/scripts/system/load_scene_data.gd" id="2_ttw54"]
 [ext_resource type="Script" path="res://am1/framework/scripts/version.gd" id="2_vxwfm"]
+[ext_resource type="Script" path="res://am1/framework/scripts/system/load_scenes.gd" id="3_ery1e"]
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/credits_button.gd" id="4_6dr51"]
 [ext_resource type="PackedScene" uid="uid://wc6iioujfcth" path="res://am1/audio_volume/scenes/volume_slider.tscn" id="6_5vnjq"]
 [ext_resource type="Theme" uid="uid://cycrci4m74eim" path="res://am1/audio_volume/themes/audio_volume_theme.tres" id="6_q3g7r"]
 [ext_resource type="AudioStream" uid="uid://dqh5ecai66gh0" path="res://kenney/bgm/title.ogg" id="8_5qjjd"]
 [ext_resource type="PackedScene" uid="uid://bn2un3qcqi0yx" path="res://am1/framework/scenes/bgm_player.tscn" id="8_s5j3o"]
 
+[sub_resource type="Resource" id="Resource_mbga6"]
+script = ExtResource("2_ttw54")
+scene_path = "res://am1/framework/demo/scenes/game.tscn"
+is_reload_when_exists = true
+
+[sub_resource type="Resource" id="Resource_cisni"]
+script = ExtResource("3_ery1e")
+scenes = Array[ExtResource("2_ttw54")]([SubResource("Resource_mbga6")])
+
 [node name="Title" type="Node" node_paths=PackedStringArray("sliders")]
 script = ExtResource("1_8phif")
 sliders = [NodePath("CanvasLayer/ThemeControl/VolumeSliders/VolumeSliderMaster"), NodePath("CanvasLayer/ThemeControl/VolumeSliders/VolumeSliderBgm"), NodePath("CanvasLayer/ThemeControl/VolumeSliders/VolumeSliderSe")]
+_game_scenes = SubResource("Resource_cisni")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

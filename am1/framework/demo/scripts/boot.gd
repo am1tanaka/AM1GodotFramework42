@@ -20,6 +20,3 @@ func _enter_tree():
 
 	## シーン読み込み開始
 	SceneChanger.change_scenes_and_wait_covered(_load_scenes)
-
-	## シーンの読み込み完了を待って、シーンの初期化メソッドを呼び出す
-	#SceneChanger.wait_and_init_scenes()

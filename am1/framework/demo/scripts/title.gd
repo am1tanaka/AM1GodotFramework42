@@ -3,6 +3,7 @@ extends Node
 ## タイトル制御クラス
 
 @export var sliders: Array[AM1VolumeSlider]
+@export var _game_scenes: LoadScenes
 
 @onready var _bgm_player := $BgmPlayer as AudioPlayer
 
@@ -19,19 +20,21 @@ func _ready():
 
 ## タイトルシーンの初期化
 func init_title():
-	SceneChanger.release_scenes.connect(release_title)
 	await SceneChanger.uncover(1.0)
 	GameState.control_on()
 	_bgm_player.play_bgm()
-
-## 解放
-func release_title():
-	queue_free()
-
 
 ## ゲーム開始ボタン
 func _on_start_button_pressed():
 	if GameState.can_control:
 		SystemSePlayer.player.play(SEPlayer.Clip.Start)
-		SceneChanger.change_scene("res://am1/framework/demo/scripts/cold_start_game.gd")
+		_cold_start_game()
 		_bgm_player.fade_out(0.5)
+
+func _cold_start_game():
+	## 画面覆い開始
+	var fade = SceneChanger.load_cover("res://am1/framework/scenes/fade.tscn") as ScreenCover	
+	fade.start_cover(Color.BLACK, 1.0)
+
+	## シーン読み込み開始
+	SceneChanger.change_scenes_and_wait_covered(_game_scenes)

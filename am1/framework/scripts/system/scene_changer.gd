@@ -1,7 +1,11 @@
 extends Node
 
 ## シーンの遷移を管理するクラス。[br]
-## 最初に起動するシーンの_ready関数でset_init_scene_method()に初期化メソッドを渡して呼び出す。
+## 起動用のシーンを作成して、_enter_tree()に画面を覆うシーンとシーンの読み込み開始処理を呼び出す。
+## シーンの初期化は、_ready関数でset_init_scene_method()を呼び出して初期化メソッドを登録する。
+## 登録した初期化メソッドは画面が隠されて、シーンの入れ替えが終わったら呼び出す。
+## 起動シーンの例は以下の通り。[br]
+## @tutorial(起動シーンのスクリプト):	https://github.com/am1tanaka/AM1GodotFramework42/blob/master/am1/framework/demo/scripts/boot.gd
 ## set_init_scene_method()に渡す初期化メソッドの例は以下の通り。[br]
 ## @tutorial(シーンの管理クラス):      https://datgm23.github.io/AM1GodotFramework42/docs/examples/scene_manage_class.md
 ## @tutorial(シーンを切り替えるクラス): https://datgm23.github.io/AM1GodotFramework42/docs/examples/change_scene_sequence.md

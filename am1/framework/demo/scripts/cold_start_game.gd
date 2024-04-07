@@ -9,13 +9,14 @@ extends Node
 func _enter_tree():
 	## 画面覆い開始
 	var fade = SceneChanger.load_cover("res://am1/framework/scenes/fade.tscn") as ScreenCover	
-	fade.start_cover(Color(0.0, 0.0, 0.0, 0.0), 1.0)
+	fade.start_cover(Color.BLACK, 1.0)
 
 	## シーン読み込み開始
-	SceneChanger.async_load_scenes(["res://am1/framework/demo/scenes/game.tscn"])
-
-	## シーンの読み込み完了を待って、シーンの初期化メソッドを呼び出す
-	SceneChanger.wait_and_init_scenes()
+	var scenes = LoadScenes.new()
+	scenes.scenes = [
+		LoadSceneData.new("res://am1/framework/demo/scenes/game.tscn")
+	]
+	SceneChanger.change_scenes_and_wait_covered(scenes)
 
 	## 切り替えが終わったら解放
 	queue_free()

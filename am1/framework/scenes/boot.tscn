@@ -1,0 +1,20 @@
+[gd_scene load_steps=6 format=3 uid="uid://r1j4ulx66a2g"]
+
+[ext_resource type="Script" path="res://am1/framework/demo/scripts/boot.gd" id="1_lk8bp"]
+[ext_resource type="Script" path="res://am1/framework/scripts/system/load_scene_data.gd" id="2_2gu5s"]
+[ext_resource type="Script" path="res://am1/framework/scripts/system/load_scenes.gd" id="3_gb2g8"]
+
+[sub_resource type="Resource" id="Resource_ohaju"]
+script = ExtResource("2_2gu5s")
+scene_path = "res://am1/framework/demo/scenes/title.tscn"
+is_reload_when_exists = true
+
+[sub_resource type="Resource" id="Resource_puoec"]
+script = ExtResource("3_gb2g8")
+scenes = Array[ExtResource("2_2gu5s")]([SubResource("Resource_ohaju")])
+
+[node name="Boot" type="Node"]
+script = ExtResource("1_lk8bp")
+cover_color = Color(1, 1, 1, 1)
+_cover_scene_path = "res://am1/framework/scenes/fade.tscn"
+_load_scenes = SubResource("Resource_puoec")

@@ -8,3 +8,4 @@ extends Resource
 
 ## 読み込み済みのシーンをリロードするときにチェック。チェックがなければ既存のシーンをそのまま使う。
 @export var is_reload_when_exists: bool
+
