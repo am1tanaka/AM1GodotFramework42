@@ -23,6 +23,8 @@ func _ready():
 ## [param color] フェードの色[br]
 ## [param sec] フェード秒数[br]
 func start_cover(color: Color, sec: float):
+	_current_state = STATE.COVERING
+
 	if !_color_rect:
 		_fade_color = color
 		_seconds = sec
@@ -37,6 +39,7 @@ func start_cover(color: Color, sec: float):
 	if 	is_zero_approx(sec):
 		color.a = 1.0
 		_color_rect.color = color
+		_current_state = STATE.COVERED
 		return
 
 	# フェードアウト
@@ -49,15 +52,23 @@ func start_cover(color: Color, sec: float):
 	_tween = create_tween()
 	_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	_tween.tween_property(_color_rect, "color", final_color, sec)
+	_tween.finished.connect(func(): _current_state = STATE.COVERED)
 
-## 覆う処理をawaitで待つ。[br]
+## 覆い終わるまでawaitで待つ。
 func wait_cover():
-	if _tween:
-		await _tween.finished
+	while get_current_state() != STATE.COVERED:
+		await get_tree().process_frame
+
+## 覆いが解除されるまでawaitで待つ。
+func wait_uncover():
+	while get_current_state() != STATE.NONE:
+		await get_tree().process_frame
 
 ## フェードインを開始する。[br]
 ## [param sec] フェード秒数
 func start_uncover(sec: float):
+	_current_state = STATE.UNCOVERING
+	
 	if _tween:
 		_tween.kill()
 
@@ -71,6 +82,7 @@ func start_uncover(sec: float):
 	_tween = create_tween()
 	_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	_tween.tween_property(_color_rect, "color", final_color, sec)
+	_tween.finished.connect(func(): _current_state = STATE.NONE)
 
 ## このシーンを消す。
 func release():

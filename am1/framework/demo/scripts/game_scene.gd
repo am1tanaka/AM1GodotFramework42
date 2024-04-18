@@ -3,6 +3,8 @@ extends Node
 
 ## ゲームシーンを管轄するクラス
 
+@export var _game_over_scenes: LoadScenes
+
 @onready var bgm_player := $BgmPlayer as AudioPlayer
 
 ## ゲームの状態の列挙子
@@ -45,9 +47,6 @@ func _change_state():
 
 ## ゲームシーンの初期化
 func _init_game():
-	# 解放処理を登録
-	SceneChanger.release_scenes.connect(_release_game_scene)
-	
 	# カバーを外す
 	await SceneChanger.uncover(1.0)
 
@@ -72,15 +71,9 @@ func _process_game():
 		print("Accept")
 	if Input.is_action_just_pressed("GameOver"):
 		next_state = State.GameOver
-	
-
-## ゲームシーンを解放する処理
-func _release_game_scene():
-	SceneChanger.free_scenes(["Game", "GameOver"])
 
 ## ゲームオーバーに切り替え
 func _change_game_over():
-	GameState.control_off()
-	SceneChanger.async_load_scenes(["res://am1/framework/demo/scenes/game_over.tscn"])
-	SceneChanger.wait_async_scenes_loaded()
+	## シーン読み込み開始
+	SceneChanger.change_scenes_and_wait_covered(_game_over_scenes)
 

@@ -27,22 +27,21 @@ signal release_scenes
 var _cover_instance: ScreenCover
 
 ## 最初の起動フラグ
-var is_booting: bool:
-	get:
-		return _is_booting
+func get_is_booting() -> bool:
+	return _is_booting
 var _is_booting: bool = true
 
 ## 非同期読み込み中のシーン名
 var _async_load_scene_pathes: Array[String] = []
+
+## SceneChangerで読み込んだシーンのパスとインスタンス
+var _loaded_scene_paths_and_instances: Dictionary
 
 ## 必要なシーンの配列
 var _need_scene_paths: Array[String] = []
 
 ## リロード対象のシーン名の配列
 var _reload_scene_paths: Array[String] = []
-
-## 読み込んだシーンのパス
-var _loaded_scene_paths: Array[String] = []
 
 ## 指定のパスのシーンを読み込んで、子ノードにしてインスタンスを返す。[br]
 ## [param cover_path] 画面を覆うシーンのパス
@@ -65,7 +64,7 @@ func uncover(sec: float):
 		return
 
 	_cover_instance.start_uncover(sec)
-	await _cover_instance.wait_cover()
+	await _cover_instance.wait_uncover()
 	_cover_instance.queue_free()
 
 ## 画面を覆う処理を開始してから呼び出す。
@@ -90,51 +89,74 @@ func change_scenes_and_wait_covered(scenes: LoadScenes):
 
 	# 非同期読み込み待ち
 	await wait_async_scenes_loaded()
+	_update_loaded_scenes_data(scenes.scenes)
 
-	# 登録された処理を実行
+	# 1フレーム待ってから切り替え処理中に受け取った初期化処理を呼び出す
 	await get_tree().process_frame
-
-	# 切り替え処理中に受け取った初期化処理を呼び出す
 	covered_loaded_unloaded.emit()
+	_disconnect_covered_loaded_unloaded()
+
+## 読み込み指定したシーンのパスとインスタンスを記録する。
+func _update_loaded_scenes_data(scenes: Array[LoadSceneData]):
+	_loaded_scene_paths_and_instances.clear()
+	var root_scenes = get_tree().root.get_children()
+
+	for scene in scenes:
+		for root_scene in root_scenes:
+			if root_scene.scene_file_path == scene.scene_path:
+				_loaded_scene_paths_and_instances[scene.scene_path] = root_scene
+				break
 
 ## メインシーンの_readyから呼び出される。
-## 初回起動のときはすぐに渡された初期化メソッドを呼び出して最初のシーンを開始する。
-## ２回目以降に呼び出されたときは渡されたメソッドをcovered_laoded_uncoveredにconnectして、
+## 渡されたメソッドをcovered_laoded_uncoveredにconnectして、
 ## 次のシーンの読み込みや画面を覆う演出を終えてからemitする。[br]
 ## [param init_method] 画面を覆って非同期読み込みが完了したら呼び出す初期化処理[br]
 func set_init_scene_method(init_method: Callable):
 	GameState.control_off()
-
-	if is_booting:
-		_is_booting = false
-		init_method.call()
-	else:
-		covered_loaded_unloaded.connect(init_method)
+	covered_loaded_unloaded.connect(init_method)
+	_is_booting = false
 
 ## 引数で受け取ったシーンに含まれないシーンと、含まれていてリロードが指定されているシーンを解放する。
 func _unload_unnecessary_scenes(scenes: LoadScenes):
-	var loaded_paths = _get_root_scenes()
-	var keys = loaded_paths.keys()
+	var keys = _loaded_scene_paths_and_instances.keys()
 
 	# 必要ないものを消す
 	for key in keys:
-		for scene in scenes.scenes:
-			if !scene.scene_path == key:
-				loaded_paths[key].queue_free()
+		var need := false
+		for need_scene in scenes.scenes:
+			if need_scene.scene_path == key:
+				need = true
+				break
+		if !need:
+			var node = _loaded_scene_paths_and_instances[key]
+			_loaded_scene_paths_and_instances.erase(key)
+			node.queue_free()
 	
 	# リロード対象を消す
 	for sc in scenes.scenes:
 		if sc.is_reload_when_exists && keys.has(sc.scene_path):
-			loaded_paths[sc.scene_path].queue_free()
+			var node = _loaded_scene_paths_and_instances[sc.scene_path]
+			_loaded_scene_paths_and_instances.erase(sc.scene_path)
+			node.queue_free()
 
-## ルートにあるシーンのファイルパスを配列にして返す。
-func _get_root_scenes() -> Dictionary:
+## ルートにあるシーンのパスとノードをディクショナリで返す。
+func _get_root_scene_paths_and_nodes() -> Dictionary:
 	var nodes = get_tree().root.get_children()
 	var result := Dictionary()
 	for node in nodes:
 		var file_path = node.scene_file_path
 		if !file_path.is_empty():
 			result[file_path] = node
+	return result
+
+## ルートにあるシーンのファイルパスを配列で返す。
+func _get_root_scene_paths() -> Array[String]:
+	var nodes = get_tree().root.get_children()
+	var result : Array[String] = []
+	for node in nodes:
+		var file_path = node.scene_file_path
+		if !file_path.is_empty():
+			result.append(file_path)
 	return result
 
 ## 非同期でシーンの読み込みを開始する。
@@ -150,7 +172,9 @@ func async_load_scenes_with_reload(scenes: LoadScenes):
 
 ## シーンを読み込み状況に応じて読み込みとリロードの配列にリストアップする
 func _listup_scene_path(sc):
-	if !_loaded_scene_paths.has(sc.scene_path):
+	var root_paths = _get_root_scene_paths()
+	
+	if !root_paths.has(sc.scene_path):
 		# 読み込まれていなければ必要なシーンにリストアップ
 		_need_scene_paths.append(sc.scene_path)
 	elif sc.is_reload_when_exists:
@@ -176,8 +200,13 @@ func async_load_scenes(scene_pathes: Array[String]):
 
 ## 画面を覆う処理の完了を待つ。
 func wait_cover_finished():
-	if _cover_instance:
+	if _cover_instance != null:
 		await _cover_instance.wait_cover()
+
+## 画面の覆いが外れるのを待つ。
+func wait_uncover_finished():
+	if _cover_instance != null:
+		await _cover_instance.wait_uncover()
 
 ## シーンの非同期読み込みをはじめたあとに呼び出して、処理の完了を待つ。
 ## 画面を覆って、シーンを解放したあとにシーンの再読み込みをしたい場合は
@@ -202,6 +231,14 @@ func wait_and_init_scenes(add_load_scenes: Array[String] = []):
 	# 登録された処理を実行
 	await get_tree().process_frame
 	covered_loaded_unloaded.emit()
+	_disconnect_covered_loaded_unloaded()
+
+## カバー完了後に実行するシグナルを解放する。
+func _disconnect_covered_loaded_unloaded():
+	var connections = covered_loaded_unloaded.get_connections()
+	for conn in connections:
+		if conn.callable != null:
+			covered_loaded_unloaded.disconnect(conn.callable)
 
 ## 非同期読み込みしているシーンの読み込みが完了するのを待つ。
 func wait_async_scenes_loaded():
@@ -216,7 +253,7 @@ func wait_async_scenes_loaded():
 
 		# エラー
 		if status != ResourceLoader.ThreadLoadStatus.THREAD_LOAD_LOADED:
-			push_error("wait_async_scenes_loaded error:"+path)
+			push_error("wait_async_scenes_loaded error : %s : %s" % [path, status])
 			return
 		
 		# 読み込み完了
@@ -226,18 +263,44 @@ func wait_async_scenes_loaded():
 	for scene in loaded_scenes:
 		var scene_instance = scene.instantiate()
 		get_tree().root.add_child(scene_instance)
-		
+
 	# パスを解放
 	_async_load_scene_pathes.clear()
 
 ## 指定のシーンを解放する。[br]
-## [param scene_names] 削除するシーン名を配列で指定
-func free_scenes(scene_names: Array[String]):
+## [param scene_names] 削除するシーンのパスを配列で指定
+func free_scenes(scene_paths: Array[String]):
 	var nodes = get_tree().root.get_children()
 	for node in nodes:
-		for scene_name in scene_names:
-			if node.name == scene_name:
+		for scene_path in scene_paths:
+			if node.scene_file_path == scene_path:
+				_loaded_scene_paths_and_instances.erase(node.scene_file_path)
 				node.queue_free()
 				break
 
+# 指定のシーンがすべて開くまで待つ
+func wait_scene_loaded_all(scene_names: Array[String]):
+	while !SceneChanger.is_scene_loaded_all(scene_names):
+		await get_tree().process_frame
 
+# 指定のシーンがすべて閉じるまで待つ
+func wait_scene_closed_all(scene_names: Array[String]):
+	# ひとつも開いていない状態になるまで待つ
+	while !SceneChanger.is_scene_closed_all(scene_names):
+		await get_tree().process_frame
+
+## 配列でシーン名を受け取って、すべてのシーンが読み込まれていたらtrueを返す。
+func is_scene_loaded_all(scene_names: Array[String]) -> bool:
+	return scene_names.all(is_scene_loaded)
+
+## 配列でシーン名を受け取って、すべてのシーンがなければtrueを返す。
+func is_scene_closed_all(scene_names: Array[String]) -> bool:
+	return !scene_names.any(is_scene_loaded)
+
+## 指定のシーン名が読み込まれていたらtrueを返す。
+func is_scene_loaded(scene: String) -> bool:
+	var root_scenes = get_tree().root.get_children()
+	for root_scene in root_scenes:
+		if scene == root_scene.name:
+			return true
+	return false

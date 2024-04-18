@@ -1,14 +1,31 @@
-[gd_scene load_steps=6 format=3 uid="uid://caxgtaifeucfc"]
+[gd_scene load_steps=11 format=3 uid="uid://caxgtaifeucfc"]
 
 [ext_resource type="Script" path="res://am1/framework/demo/scripts/game_scene.gd" id="1_wxx4f"]
+[ext_resource type="Script" path="res://am1/framework/scripts/system/load_scene_data.gd" id="2_5y1m2"]
 [ext_resource type="Theme" uid="uid://d4iri2l3hdg0f" path="res://am1/settings/framework_theme.tres" id="2_t0m25"]
 [ext_resource type="PackedScene" uid="uid://bn2un3qcqi0yx" path="res://am1/framework/scenes/bgm_player.tscn" id="3_c0ajy"]
+[ext_resource type="Script" path="res://am1/framework/scripts/system/load_scenes.gd" id="3_qn088"]
 [ext_resource type="AudioStream" uid="uid://d3s560sxrdg40" path="res://kenney/bgm/game.ogg" id="4_bca3y"]
+
+[sub_resource type="Resource" id="Resource_manpd"]
+script = ExtResource("2_5y1m2")
+scene_path = "res://am1/framework/demo/scenes/game.tscn"
+is_reload_when_exists = false
+
+[sub_resource type="Resource" id="Resource_ebiqc"]
+script = ExtResource("2_5y1m2")
+scene_path = "res://am1/framework/demo/scenes/game_over.tscn"
+is_reload_when_exists = true
+
+[sub_resource type="Resource" id="Resource_a0a70"]
+script = ExtResource("3_qn088")
+scenes = Array[ExtResource("2_5y1m2")]([SubResource("Resource_manpd"), SubResource("Resource_ebiqc")])
 
 [sub_resource type="SphereMesh" id="SphereMesh_bqr41"]
 
 [node name="Game" type="Node"]
 script = ExtResource("1_wxx4f")
+_game_over_scenes = SubResource("Resource_a0a70")
 
 [node name="World" type="Node3D" parent="."]
 
