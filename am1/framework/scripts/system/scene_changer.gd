@@ -32,7 +32,7 @@ func get_is_booting() -> bool:
 var _is_booting: bool = true
 
 ## 非同期読み込み中のシーン名
-var _async_load_scene_pathes: Array[String] = []
+var _async_load_scene_paths: Array[String] = []
 
 ## SceneChangerで読み込んだシーンのパスとインスタンス
 var _loaded_scene_paths_and_instances: Dictionary
@@ -102,10 +102,18 @@ func _update_loaded_scenes_data(scenes: Array[LoadSceneData]):
 	var root_scenes = get_tree().root.get_children()
 
 	for scene in scenes:
-		for root_scene in root_scenes:
-			if root_scene.scene_file_path == scene.scene_path:
-				_loaded_scene_paths_and_instances[scene.scene_path] = root_scene
-				break
+		var root_scene = _find_scene_with_file_path(scene.scene_path, root_scenes)
+		if root_scene != null:
+			_loaded_scene_paths_and_instances[scene.scene_path] = root_scene
+			break
+
+## 指定のファイルパスのシーンをルートから取得したシーン配列から
+## 見つけてインスタンスを返す。
+func _find_scene_with_file_path(file_path: String, root_scenes: Array):
+	for root_scene in root_scenes:
+		if root_scene.scene_file_path == file_path:
+			return root_scene
+	return null
 
 ## メインシーンの_readyから呼び出される。
 ## 渡されたメソッドをcovered_laoded_uncoveredにconnectして、
@@ -162,7 +170,7 @@ func _get_root_scene_paths() -> Array[String]:
 ## 非同期でシーンの読み込みを開始する。
 ## シーンが読み込み済みなら、リロードするかどうかを引数で確認する。
 ## リロードするシーンなら後の処理で解放と読み込みをするために配列に取っておく。
-## [param scene_pathes] 非同期に読み込むシーンパスの配列
+## [param scene_paths] 非同期に読み込むシーンパスの配列
 func async_load_scenes_with_reload(scenes: LoadScenes):
 	_need_scene_paths.clear()
 	_reload_scene_paths.clear()
@@ -184,11 +192,11 @@ func _listup_scene_path(sc):
 	return true
 
 ## 非同期でシーンの読み込みを開始する。
-## [param scene_pathes] 非同期に読み込むシーンパスの配列
-func async_load_scenes(scene_pathes: Array[String]):
-	for _path in scene_pathes:
+## [param scene_paths] 非同期に読み込むシーンパスの配列
+func async_load_scenes(scene_paths: Array[String]):
+	for _path in scene_paths:
 		# すでに読み込み中なら処理しない
-		if _async_load_scene_pathes.has(_path):
+		if _async_load_scene_paths.has(_path):
 			continue
 		
 		# 読み込み開始
@@ -196,7 +204,29 @@ func async_load_scenes(scene_pathes: Array[String]):
 			push_error("Load Error: "+_path)
 			return
 		
-		_async_load_scene_pathes.append(_path)
+		_async_load_scene_paths.append(_path)
+
+## シーンを追加読み込みして、完了するのを待つ。
+func append_scenes_and_wait_loaded(scene_paths: Array[String]):
+	# シーンを読み込む
+	async_load_scenes(scene_paths)
+
+	# 非同期読み込み待ち
+	await wait_async_scenes_loaded()
+
+	# 読み込んだシーンを配列に登録
+	var root_scenes = get_tree().root.get_children()
+	for scene_path in scene_paths:
+		var data = _loaded_scene_paths_and_instances.find_key(scene_path)
+		if data == null:
+			var root_scene = _find_scene_with_file_path(scene_path, root_scenes)
+			if root_scene == null:
+				continue
+			_loaded_scene_paths_and_instances[scene_path] = root_scene
+	
+	# シーンの初期化
+	covered_loaded_unloaded.emit()
+	_disconnect_covered_loaded_unloaded()
 
 ## 画面を覆う処理の完了を待つ。
 func wait_cover_finished():
@@ -244,7 +274,7 @@ func _disconnect_covered_loaded_unloaded():
 func wait_async_scenes_loaded():
 	# 読み込み完了待ち
 	var loaded_scenes = Array()
-	for path in _async_load_scene_pathes:
+	for path in _async_load_scene_paths:
 		var status = ResourceLoader.load_threaded_get_status(path)
 
 		while status == ResourceLoader.ThreadLoadStatus.THREAD_LOAD_IN_PROGRESS:
@@ -265,7 +295,7 @@ func wait_async_scenes_loaded():
 		get_tree().root.add_child(scene_instance)
 
 	# パスを解放
-	_async_load_scene_pathes.clear()
+	_async_load_scene_paths.clear()
 
 ## 指定のシーンを解放する。[br]
 ## [param scene_names] 削除するシーンのパスを配列で指定
