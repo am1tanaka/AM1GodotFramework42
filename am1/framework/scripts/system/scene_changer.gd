@@ -194,9 +194,15 @@ func _listup_scene_path(sc):
 ## 非同期でシーンの読み込みを開始する。
 ## [param scene_paths] 非同期に読み込むシーンパスの配列
 func async_load_scenes(scene_paths: Array[String]):
+	var root_children = get_tree().root.get_children()
+	
 	for _path in scene_paths:
 		# すでに読み込み中なら処理しない
 		if _async_load_scene_paths.has(_path):
+			continue
+
+		# すでにルートにあったら処理しない
+		if _find_scene_with_file_path(_path, root_children) != null:
 			continue
 		
 		# 読み込み開始
